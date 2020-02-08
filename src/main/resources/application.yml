@@ -1,0 +1,44 @@
+server:
+  port: 8088
+
+spring:
+  datasource:
+    username: root
+    password: 1234
+    url: jdbc:mysql://localhost:3306/nydb?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+  application:
+    name: nongtian
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+  jackson:
+    default-property-inclusion: non_null
+  resources:
+    #在Springboot中可以直接在配置文件中覆盖默认的静态资源路径的配置信息
+    #配置静态资源目录，以逗号分隔多个目录,
+    #加file：是因为后面指定的是一个具体的硬盘路径，其他的使用classpath指的是系统环境变量
+    static-locations: file:E:/images/
+  servlet:
+    multipart:
+      #单文件限制大小
+      max-file-size: 10MB
+      #一次请求限制大小
+      max-request-size: 100MB
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  type-aliases-package: com.wj.nongtian.entity
+
+
+#自定义配置文件
+myconfig:
+  #文件上传后存储路径(window是d/e/f盘， linux是/)
+  fileUploadFolder: E://images/
+  #浏览器访问
+  fileUri: /resource/
+  #静态资源对外暴露的访问路径(访问图片的路径)
+  fileStaticAccessPath: /resource/**

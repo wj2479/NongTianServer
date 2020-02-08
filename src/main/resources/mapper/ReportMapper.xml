@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wj.nongtian.mapper.ReportMapper">
+
+    <resultMap id="report_result_map" type="com.wj.nongtian.entity.ProjectDailyReport">
+        <!-- 定义主键 ,非常重要。如果是多个字段,则定义多个id -->
+        <!-- property：主键在pojo中的属性名 -->
+        <!-- column：主键在数据库中的列名 -->
+        <id property="id" column="id"></id>
+
+        <!-- 定义普通属性 -->
+        <result property="pid" column="pid"></result>
+        <result property="uid" column="uid"></result>
+        <result property="title" column="title"></result>
+        <result property="content" column="content"></result>
+        <result property="check" column="check"></result>
+        <result property="schedule" column="schedule"></result>
+        <result property="district" column="district"></result>
+        <result property="lnglat" column="lnglat"></result>
+        <result property="address" column="address"></result>
+        <result property="createTime" column="createtime"></result>
+        <result property="updateTime" column="updatetime"></result>
+
+    </resultMap>
+
+    <select id="getDailyReportByProjectId" resultType="com.wj.nongtian.entity.ProjectDailyReport">
+        select * from project_day_report
+        where pid = #{pid}
+        group by schedule
+        order by schedule
+
+    </select>
+
+
+</mapper>

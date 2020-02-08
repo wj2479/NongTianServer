@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wj.nongtian.mapper.UserMapper">
+
+    <resultMap id="user_result_map" type="com.wj.nongtian.entity.User">
+        <!-- 定义主键 ,非常重要。如果是多个字段,则定义多个id -->
+        <!-- property：主键在pojo中的属性名 -->
+        <!-- column：主键在数据库中的列名 -->
+        <id property="id" column="id"></id>
+
+        <!-- 定义普通属性 -->
+        <result property="userName" column="username"></result>
+        <result property="passWord" column="password"></result>
+        <result property="salt" column="salt"></result>
+        <result property="nickName" column="nickname"></result>
+        <result property="phone" column="phone"></result>
+        <result property="phoneVerified" column="phoneverified"></result>
+        <result property="role" column="role"></result>
+        <result property="age" column="age"></result>
+        <result property="gender" column="gender"></result>
+        <result property="avater" column="avater"></result>
+        <result property="createTime" column="createtime"></result>
+        <result property="updateTime" column="updatetime"></result>
+
+        <association property="area" javaType="com.wj.nongtian.entity.Area">
+            <id property="id" column="areaid"></id>
+
+            <result property="regionLevel" column="region_level"></result>
+            <result property="parentId" column="parent_id"></result>
+            <result property="name" column="aname"></result>
+            <result property="regionCode" column="region_code"></result>
+            <result property="shortName" column="short_name"></result>
+        </association>
+    </resultMap>
+
+    <select id="isUserNameExists"  resultType="java.lang.Boolean">
+    <![CDATA[ select count(id)
+                from user_info where username = #{username} ]]>
+    </select>
+
+    <select id="isUserIdExists"  resultType="java.lang.Boolean">
+    <![CDATA[ select count(id)
+                from user_info where id = #{uid} ]]>
+    </select>
+
+    <select id="getSalt"  resultType="java.lang.String">
+        select salt from user_info where username = #{username}
+    </select>
+
+    <select id="getLoginInfo"  resultMap="user_result_map">
+        select user_info.*,area.id as aid,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name
+        from user_info
+        left join area
+        on user_info.areaid = area.id
+        where user_info.username = #{username}
+        and user_info.password = #{password}
+    </select>
+
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wj.nongtian.mapper.ProjectMapper">
+
+    <resultMap id="project_result_map" type="com.wj.nongtian.entity.Project">
+        <!-- 定义主键 ,非常重要。如果是多个字段,则定义多个id -->
+        <!-- property：主键在pojo中的属性名 -->
+        <!-- column：主键在数据库中的列名 -->
+        <id property="id" column="id"></id>
+
+        <!-- 定义普通属性 -->
+        <result property="name" column="name"></result>
+        <result property="info" column="info"></result>
+        <result property="process" column="process"></result>
+        <result property="parentId" column="parentid"></result>
+        <result property="creater" column="creater"></result>
+        <result property="tags" column="tags"></result>
+        <result property="level" column="level"></result>
+        <result property="createTime" column="createtime"></result>
+        <result property="updateTime" column="updatetime"></result>
+
+        <association property="area" javaType="com.wj.nongtian.entity.Area">
+            <id property="id" column="areaid"></id>
+
+            <result property="regionLevel" column="region_level"></result>
+            <result property="parentId" column="parent_id"></result>
+            <result property="name" column="aname"></result>
+            <result property="regionCode" column="region_code"></result>
+            <result property="shortName" column="short_name"></result>
+        </association>
+    </resultMap>
+
+    <select id="isProjectExists" resultType="java.lang.Boolean">
+    <![CDATA[ select count(id)
+                from project_info where id = #{pid} ]]>
+    </select>
+
+    <select id="getProjectIdByUserId" resultType="java.lang.String">
+             select pid from project_user where uid = #{uid}
+     </select>
+
+    <select id="getProjectById" resultMap="project_result_map">
+             select project_info.*, area.id as aid,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name
+             from project_info
+             left join area
+             on project_info.areaid = area.id
+             where project_info.id = #{pid}
+     </select>
+
+    <select id="getSubProjectsByParentId" resultMap="project_result_map">
+             select project_info.*, area.id as aid,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name
+             from project_info
+             left join area
+             on project_info.areaid = area.id
+             where parentid = #{pid}
+     </select>
+
+    <select id="getProjectAreaRank" resultType="java.lang.Integer">
+            select p.rk
+            from (
+                select *, rank() over( order by process desc) rk
+                from project_info
+                where parentid = #{parentId} and level =#{level}
+            ) p
+            where p.id = #{pid}
+     </select>
+
+    <select id="getTop1ProjectArea" resultMap="project_result_map">
+            select *
+            from (
+                select *, rank() over( order by process desc) rk
+                from project_info
+                where parentid = #{parentId} and level =#{level}
+            ) p
+            where p.rk = 1
+     </select>
+
+    <select id="getProjectPlanMonth" resultType="java.lang.Integer">
+         select target from project_plan_month where pid =#{pid}  and year = #{year}  and month= #{month}
+     </select>
+
+    <insert id="saveProjectPlanMonth">
+        insert into project_plan_month (pid,uid,year,month,target,createtime) VALUES(#{pid},#{uid},#{year},#{month},#{target},now())
+    </insert>
+
+</mapper>
