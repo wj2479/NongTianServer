@@ -27,17 +27,17 @@ public class Area {
     /**
      * 地域名称
      */
-    private String name="";
+    private String name = "";
 
     /**
      * 行政编码
      */
-    private String regionCode="";
+    private String regionCode = "";
 
     /**
      * 简称
      */
-    private String shortName="";
+    private String shortName = "";
 
     public int getId() {
         return id;
@@ -93,6 +93,17 @@ public class Area {
 
     public void setParent(Area parent) {
         this.parent = parent;
+    }
+
+    /**
+     * 判断地区是不是还有下级
+     * @return
+     */
+    public boolean hasChild() {
+        if (regionLevel < 4) {
+            return true;
+        }
+        return false;
     }
 
     @Override

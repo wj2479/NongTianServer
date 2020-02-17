@@ -21,4 +21,6 @@ public interface ProjectService {
     int getProjectPlanMonth(int pid);
 
     boolean setProjectPlanThisMonth(int pid, int uid, int target);
+
+    int updateProjectSchedule(int pid,int schedule);
 }

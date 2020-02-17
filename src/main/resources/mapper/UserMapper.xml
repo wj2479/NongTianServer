@@ -15,7 +15,6 @@
         <result property="nickName" column="nickname"></result>
         <result property="phone" column="phone"></result>
         <result property="phoneVerified" column="phoneverified"></result>
-        <result property="role" column="role"></result>
         <result property="age" column="age"></result>
         <result property="gender" column="gender"></result>
         <result property="avater" column="avater"></result>
@@ -30,6 +29,13 @@
             <result property="name" column="aname"></result>
             <result property="regionCode" column="region_code"></result>
             <result property="shortName" column="short_name"></result>
+        </association>
+
+        <association property="role" javaType="com.wj.nongtian.entity.Role">
+            <id property="id" column="role"></id>
+
+            <result property="code" column="code"></result>
+            <result property="desc" column="desc"></result>
         </association>
     </resultMap>
 
@@ -48,12 +54,33 @@
     </select>
 
     <select id="getLoginInfo"  resultMap="user_result_map">
-        select user_info.*,area.id as aid,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name
+        select user_info.*,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name,role.code,role.desc
         from user_info
         left join area
         on user_info.areaid = area.id
+        left join role
+        on user_info.role = role.id
         where user_info.username = #{username}
         and user_info.password = #{password}
+    </select>
+
+    <select id="getUserById"  resultMap="user_result_map">
+        select user_info.*,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name,role.code,role.desc
+        from user_info
+        left join area
+        on user_info.areaid = area.id
+        left join role
+        on user_info.role = role.id
+        where user_info.id = #{uid}
+    </select>
+
+    <select id="getUsersByAreaId"  resultMap="user_result_map">
+        select user_info.*,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name,role.code,role.desc
+        from user_info,area,role
+        where user_info.areaid = #{areaId}
+        and user_info.role = role.id
+        and user_info.areaid = area.id
+        and (role.`code` = 2  or role.`code` = 1)
     </select>
 
 </mapper>

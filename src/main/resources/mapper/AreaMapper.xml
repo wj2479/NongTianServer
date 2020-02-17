@@ -16,8 +16,12 @@
         <result property="shortName" column="short_name"></result>
     </resultMap>
 
-    <select id="getAreaById" parameterType="java.lang.Integer" resultMap="area_result_map">
-            select * from area where id = #{id, jdbcType=INTEGER}
+    <select id="getAreaById" resultMap="area_result_map">
+            select * from area where id = #{id}
+    </select>
+
+    <select id="getSubAreaById" resultMap="area_result_map">
+            select * from area where parent_id = #{pid}
     </select>
 
 </mapper>

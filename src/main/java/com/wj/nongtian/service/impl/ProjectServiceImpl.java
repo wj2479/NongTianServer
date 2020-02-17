@@ -98,4 +98,32 @@ public class ProjectServiceImpl implements ProjectService {
         return false;
     }
 
+    @Override
+    public int updateProjectSchedule(int pid, int schedule) {
+        Project project = projectMapper.getProjectById(pid);
+        if (project != null) {
+            if (project.getProcess() == schedule) {
+                return 1;
+            }
+
+            int num = projectMapper.updateProjectSchedule(pid, schedule);
+            logger.info("更新项目进度:" + pid + "-->" + schedule);
+
+            if (project.getParentId() > 0) {
+                List<Project> projects = projectMapper.getSubProjectsByParentId(project.getParentId());
+                int avgSchedule = 0;
+
+                if (projects != null && projects.size() > 0) {
+                    int sum = 0;
+                    for (Project proj : projects) {
+                        sum += proj.getProcess();
+                    }
+                    avgSchedule = sum / projects.size();
+                    return updateProjectSchedule(project.getParentId(), avgSchedule);
+                }
+            }
+            return 1;
+        }
+        return -1;
+    }
 }

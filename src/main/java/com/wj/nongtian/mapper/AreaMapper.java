@@ -1,6 +1,9 @@
 package com.wj.nongtian.mapper;
 
 import com.wj.nongtian.entity.Area;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface AreaMapper {
 
@@ -10,5 +13,13 @@ public interface AreaMapper {
      * @param id
      * @return
      */
-    Area getAreaById(int id);
+    Area getAreaById(@Param("id") int id);
+
+    /**
+     * 获取下级的地区列表
+     *
+     * @param parentId
+     * @return
+     */
+    List<Area> getSubAreaById(@Param("pid") int parentId);
 }

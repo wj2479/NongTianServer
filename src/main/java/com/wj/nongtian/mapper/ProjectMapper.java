@@ -2,6 +2,7 @@ package com.wj.nongtian.mapper;
 
 import com.wj.nongtian.entity.Project;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -79,5 +80,6 @@ public interface ProjectMapper {
      */
     int saveProjectPlanMonth(@Param("pid") int pid, @Param("uid") int uid, @Param("year") int year, @Param("month") int month, @Param("target") int target);
 
-
+    @Update("update project_info set process = #{schedule} where id= #{pid}")
+    int updateProjectSchedule(@Param("pid") int pid, @Param("schedule") int schedule);
 }

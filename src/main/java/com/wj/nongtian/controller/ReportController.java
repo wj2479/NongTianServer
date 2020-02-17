@@ -68,7 +68,7 @@ public class ReportController {
                     responseMedia.setMd5(media.getMd5());
                     responseMedia.setType(media.getType());
                     // 重新封装返回的URL
-                    String url = "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + media.getPath();
+                    String url = "http://" + request.getServerName() + ":" + request.getServerPort() + mConfig.getFileUri() + media.getPath();
                     responseMedia.setUrl(url);
                     list.add(responseMedia);
                 }
@@ -158,7 +158,7 @@ public class ReportController {
         }
 
         //校验其他参数
-        if (dailyReport.getCheck() < 0 || StringUtils.isEmpty(dailyReport.getTitle()) || dailyReport.getSchedule() < 0) {
+        if (dailyReport.getCheck() < 0 || StringUtils.isEmpty(dailyReport.getTitle()) || dailyReport.getSchedule() < 0 || dailyReport.getSchedule() > 100) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
 
@@ -169,6 +169,8 @@ public class ReportController {
         try {
             int id = reportService.addDailyReport(dailyReport);
 //            System.out.println("当前上传的对象ID：" + dailyReport.getId());
+
+            projectService.updateProjectSchedule(dailyReport.getPid(),dailyReport.getSchedule());
 
             if (files != null && files.length > 0) {
                 // 配置文件配置的上传文件根目录

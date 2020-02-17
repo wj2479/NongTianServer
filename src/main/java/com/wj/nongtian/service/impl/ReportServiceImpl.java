@@ -34,7 +34,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public int addReportMedias( ReportMedia medias) {
+    public int addReportMedias(ReportMedia medias) {
         return reportMapper.addReportMedias(medias);
     }
 
@@ -42,4 +42,5 @@ public class ReportServiceImpl implements ReportService {
     public List<ReportMedia> getReportMedias(int rid) {
         return reportMapper.getReportMedias(rid);
     }
+
 }

@@ -48,7 +48,7 @@ public class User {
     /**
      * 角色类型
      */
-    private int role;
+    private Role role;
 
     /**
      * 年龄
@@ -131,11 +131,11 @@ public class User {
         this.area = area;
     }
 
-    public int getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(int role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

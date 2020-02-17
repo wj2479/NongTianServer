@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Random;
 
 @Transactional
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isUserExist(int id) {
-       return userMapper.isUserIdExists(id);
+        return userMapper.isUserIdExists(id);
     }
 
     @Override
@@ -46,6 +47,16 @@ public class UserServiceImpl implements UserService {
             String sha1 = DigestUtils.sha1Hex(password + salt);
             return userMapper.getLoginInfo(username, sha1);
         }
+    }
+
+    @Override
+    public User getUser(int id) {
+        return userMapper.getUserById(id);
+    }
+
+    @Override
+    public List<User> getUsersByAreaId(int areaId) {
+        return userMapper.getUsersByAreaId(areaId);
     }
 
 
