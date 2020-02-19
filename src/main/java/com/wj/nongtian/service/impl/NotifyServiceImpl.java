@@ -2,6 +2,7 @@ package com.wj.nongtian.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
 import com.wj.nongtian.entity.Notify;
+import com.wj.nongtian.entity.NotifyReceiver;
 import com.wj.nongtian.mapper.NotifyMapper;
 import com.wj.nongtian.service.NotifyService;
 import org.apache.log4j.Logger;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -78,18 +78,11 @@ public class NotifyServiceImpl implements NotifyService {
     }
 
     @Override
-    public List<Notify> getReceivedNotify(int uid) {
-        List<Notify> notifyList = null;
+    public List<NotifyReceiver> getReceivedNotify(int uid) {
+        List<NotifyReceiver> notifyList = null;
 
         try {
-            List<Integer> ids = notifyMapper.getReceiveNotifyIdsByUserId(uid);
-            if (ids != null) {
-                notifyList = new ArrayList<>();
-                for (Integer id : ids) {
-                    Notify notify = notifyMapper.getNotifyById(id);
-                    notifyList.add(notify);
-                }
-            }
+            notifyList = notifyMapper.getReceiveNotifysByUserId(uid);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("获取接收到的通知异常：" + e.toString());

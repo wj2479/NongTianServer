@@ -1,6 +1,7 @@
 package com.wj.nongtian.mapper;
 
 import com.wj.nongtian.entity.Notify;
+import com.wj.nongtian.entity.NotifyReceiver;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -45,7 +46,7 @@ public interface NotifyMapper {
      * @return
      */
     @Update("update notify_read set isread = 1 , readtime = now() where uid = #{uid} and nid = #{nid}")
-    int setNotifyRead(@Param("nid") int nid, @Param("uid") int uid);
+    int setNotifyRead(@Param("uid") int uid, @Param("nid") int nid);
 
     /**
      * 获取通知的接受者ID列表
@@ -62,8 +63,19 @@ public interface NotifyMapper {
      * @param uid
      * @return
      */
-    @Select("select distinct nid from notify_read where uid = #{uid} ")
-    List<Integer> getReceiveNotifyIdsByUserId(@Param("uid") int uid);
+    @Select("select  notify.*,notify_read.isread,notify_read.readtime from notify,notify_read where notify_read.uid = #{uid} and notify.id = notify_read.nid ")
+    @Results({
+            @Result(property = "isDel", column = "isdel"),
+            @Result(property = "isRead", column = "isread"),
+            @Result(property = "isCancel", column = "iscancel"),
+            @Result(property = "deleteTime", column = "deletetime"),
+            @Result(property = "cancelTime", column = "cancelTime"),
+            @Result(property = "createTime", column = "createtime"),
+            @Result(property = "updateTime", column = "updatetime"),
+            @Result(property = "readTime", column = "readtime")
+    }
+    )
+    List<NotifyReceiver> getReceiveNotifysByUserId(@Param("uid") int uid);
 
     /**
      * 根据通知ID获取通知对象

@@ -3,6 +3,7 @@ package com.wj.nongtian.controller;
 import com.alibaba.druid.util.StringUtils;
 import com.wj.nongtian.ResultCode;
 import com.wj.nongtian.entity.Notify;
+import com.wj.nongtian.entity.NotifyReceiver;
 import com.wj.nongtian.service.NotifyService;
 import com.wj.nongtian.service.UserService;
 import com.wj.nongtian.utils.JsonUtils;
@@ -62,7 +63,7 @@ public class NotifyController {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
 
-        List<Notify> notifyList = notifyService.getReceivedNotify(uid);
+        List<NotifyReceiver> notifyList = notifyService.getReceivedNotify(uid);
         if (notifyList != null) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_OK, notifyList);
         } else {
@@ -76,11 +77,11 @@ public class NotifyController {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
 
-        boolean isSuccess = notifyService.setNotifyRead(nid, nid);
+        boolean isSuccess = notifyService.setNotifyRead(uid, nid);
         if (isSuccess) {
-            return JsonUtils.getJsonResult(ResultCode.RESULT_OK, "发布成功");
+            return JsonUtils.getJsonResult(ResultCode.RESULT_OK, "设置成功");
         } else {
-            return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "发布失败");
+            return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "设置失败");
         }
     }
 
