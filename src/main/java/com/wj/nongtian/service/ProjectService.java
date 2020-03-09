@@ -10,6 +10,8 @@ public interface ProjectService {
 
     int getProjectIdByUserId(int uid);
 
+    int getUserIdByProjectId(int pid);
+
     Project getProjectById(int pid);
 
     List<Project> getSubProjectsByParentId(int pid);

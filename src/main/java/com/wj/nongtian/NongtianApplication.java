@@ -11,5 +11,4 @@ public class NongtianApplication {
     public static void main(String[] args) {
         SpringApplication.run(NongtianApplication.class, args);
     }
-
 }

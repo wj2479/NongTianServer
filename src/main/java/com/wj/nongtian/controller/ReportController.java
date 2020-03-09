@@ -56,23 +56,24 @@ public class ReportController {
         String result = "";
         List<ProjectDailyReport> dailyReports = reportService.getDailyReports(pid);
 
-        for (ProjectDailyReport dailyReport : dailyReports) {
-            List<ReportMedia> reportMedia = reportService.getReportMedias(dailyReport.getId());
-            System.out.println("项目日报记录" + dailyReport.getId() + " -->" + reportMedia.size());
-            if (reportMedia != null && reportMedia.size() > 0) {
-
-                List<ResponseMedia> list = new ArrayList<>();
-                for (ReportMedia media : reportMedia) {
-                    ResponseMedia responseMedia = new ResponseMedia();
-                    responseMedia.setName(media.getName());
-                    responseMedia.setMd5(media.getMd5());
-                    responseMedia.setType(media.getType());
-                    // 重新封装返回的URL
-                    String url = "http://" + request.getServerName() + ":" + request.getServerPort() + mConfig.getFileUri() + media.getPath();
-                    responseMedia.setUrl(url);
-                    list.add(responseMedia);
+        if (dailyReports != null) {
+            for (ProjectDailyReport dailyReport : dailyReports) {
+                List<ReportMedia> reportMedia = reportService.getReportMedias(dailyReport.getId());
+                System.out.println("项目日报记录" + dailyReport.getId() + " -->" + reportMedia.size());
+                if (reportMedia != null && reportMedia.size() > 0) {
+                    List<ResponseMedia> list = new ArrayList<>();
+                    for (ReportMedia media : reportMedia) {
+                        ResponseMedia responseMedia = new ResponseMedia();
+                        responseMedia.setName(media.getName());
+                        responseMedia.setMd5(media.getMd5());
+                        responseMedia.setType(media.getType());
+                        // 重新封装返回的URL
+                        String url = "http://" + request.getServerName() + ":" + request.getServerPort() + mConfig.getImageFolder() + media.getPath();
+                        responseMedia.setUrl(url);
+                        list.add(responseMedia);
+                    }
+                    dailyReport.setMediaList(list);
                 }
-                dailyReport.setMediaList(list);
             }
         }
 
@@ -170,11 +171,11 @@ public class ReportController {
             int id = reportService.addDailyReport(dailyReport);
 //            System.out.println("当前上传的对象ID：" + dailyReport.getId());
 
-            projectService.updateProjectSchedule(dailyReport.getPid(),dailyReport.getSchedule());
+            projectService.updateProjectSchedule(dailyReport.getPid(), dailyReport.getSchedule());
 
             if (files != null && files.length > 0) {
                 // 配置文件配置的上传文件根目录
-                String configPath = mConfig.getFileUploadFolder();
+                String configPath = mConfig.getFileUploadFolder()+mConfig.getImageFolder();
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH) + 1;
 

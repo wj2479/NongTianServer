@@ -50,6 +50,11 @@ public class Project {
     private int level = 0;
 
     /**
+     * 项目的管理者
+     */
+    private User manager = null;
+
+    /**
      * 创建时间
      */
     private String createTime = "";
@@ -145,6 +150,14 @@ public class Project {
 
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public User getManager() {
+        return manager;
+    }
+
+    public void setManager(User manager) {
+        this.manager = manager;
     }
 
     @Override

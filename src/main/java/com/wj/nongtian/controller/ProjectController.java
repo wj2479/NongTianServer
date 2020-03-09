@@ -2,8 +2,10 @@ package com.wj.nongtian.controller;
 
 import com.wj.nongtian.ResultCode;
 import com.wj.nongtian.entity.Project;
+import com.wj.nongtian.entity.User;
 import com.wj.nongtian.service.AreaService;
 import com.wj.nongtian.service.ProjectService;
+import com.wj.nongtian.service.UserService;
 import com.wj.nongtian.utils.JsonUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ public class ProjectController {
     private ProjectService projectService;
     @Autowired
     private AreaService areaService;
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/getProjectByUserId", method = RequestMethod.GET)
     public String getProjectByUserId(Integer uid) {
@@ -64,7 +68,15 @@ public class ProjectController {
 
         List<Project> projects = projectService.getSubProjectsByParentId(pid);
         if (projects != null && projects.size() > 0) {
-            projects.forEach(proj -> areaService.initParentAreas(proj.getArea()));
+            projects.forEach(proj -> {
+                        areaService.initParentAreas(proj.getArea());
+                        int userId = projectService.getUserIdByProjectId(proj.getId());
+                        if (userId != -1) {
+                            User user = userService.getUser(userId);
+                            proj.setManager(user);
+                        }
+                    }
+            );
         }
         return JsonUtils.getJsonResult(ResultCode.RESULT_OK, projects);
     }

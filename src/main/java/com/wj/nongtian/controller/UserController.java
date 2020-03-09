@@ -50,11 +50,11 @@ public class UserController {
 
         User user = userService.login(username, password);
 
-        logger.info("查询到登录结果:" + user.toString());
-        areaService.initParentAreas(user.getArea());
-
         String result = "";
         if (user != null) {
+            logger.info("查询到登录结果:" + user.toString());
+            areaService.initParentAreas(user.getArea());
+
             result = JsonUtils.getJsonResult(ResultCode.RESULT_OK, "登录成功", user);
         } else {
             result = JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED);

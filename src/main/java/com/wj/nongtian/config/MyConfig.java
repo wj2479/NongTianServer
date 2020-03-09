@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties(prefix = "myconfig")
-public class MyConfig  {
+public class MyConfig {
 
     /**
      * 文件上传的文件夹
@@ -22,6 +22,14 @@ public class MyConfig  {
      * 静态资源对外暴露的访问路径(访问图片的路径)
      */
     String fileStaticAccessPath;
+    /**
+     * 升级APP上传的路径
+     */
+    String appFolder;
+    /**
+     * 图片上传的路径
+     */
+    String imageFolder;
 
     public String getFileUploadFolder() {
         return fileUploadFolder;
@@ -45,5 +53,21 @@ public class MyConfig  {
 
     public void setFileStaticAccessPath(String fileStaticAccessPath) {
         this.fileStaticAccessPath = fileStaticAccessPath;
+    }
+
+    public String getAppFolder() {
+        return appFolder;
+    }
+
+    public void setAppFolder(String appFolder) {
+        this.appFolder = appFolder;
+    }
+
+    public String getImageFolder() {
+        return imageFolder;
+    }
+
+    public void setImageFolder(String imageFolder) {
+        this.imageFolder = imageFolder;
     }
 }

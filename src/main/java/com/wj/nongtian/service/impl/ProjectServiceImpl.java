@@ -42,6 +42,20 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public int getUserIdByProjectId(int pid) {
+        int result = -1;
+        List<String> list = projectMapper.getUserIdByProjectId(pid);
+        if (list.size() > 0) {
+            try {
+                result = Integer.parseInt(list.get(0));
+            } catch (Exception e) {
+
+            }
+        }
+        return result;
+    }
+
+    @Override
     public Project getProjectById(int pid) {
         return projectMapper.getProjectById(pid);
     }

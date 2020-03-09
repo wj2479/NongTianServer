@@ -23,7 +23,7 @@ public class ReportServiceImpl implements ReportService {
         try {
             dailyReports = reportMapper.getDailyReportByProjectId(pid);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         return dailyReports;
     }

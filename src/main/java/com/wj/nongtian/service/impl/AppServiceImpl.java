@@ -19,4 +19,13 @@ public class AppServiceImpl implements AppService {
     public AppUpdate getUpdateInfo() {
         return appMapper.getUpdateInfo();
     }
+
+    @Override
+    public boolean addUpdateInfo(int versionCode, String versionName, String info, String configPath, String filename) {
+        int count = appMapper.addUpdateInfo(versionCode, versionName, info, configPath, filename);
+        if (count == 1) {
+            return true;
+        }
+        return false;
+    }
 }

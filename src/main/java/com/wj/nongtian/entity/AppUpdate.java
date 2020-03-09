@@ -3,31 +3,20 @@ package com.wj.nongtian.entity;
 /**
  * APP更新对象
  */
-public class AppUpdate {
+public class AppUpdate extends BaseAppUpdate{
     /**
      * 主键
      */
     int id;
+
     /**
-     * 版本号
+     * 文件保存的根目录
      */
-    int versionCode;
+    String rootPath = "";
     /**
-     * 版本名称
+     * 保存的文件名
      */
-    String versionName = "";
-    /**
-     * 更新内容
-     */
-    String content = "";
-    /**
-     * 文件下载地址
-     */
-    String url = "";
-    /**
-     * 创建时间
-     */
-    private String createTime = "";
+    String fileName = "";
 
     public int getId() {
         return id;
@@ -37,43 +26,19 @@ public class AppUpdate {
         this.id = id;
     }
 
-    public int getVersionCode() {
-        return versionCode;
+    public String getRootPath() {
+        return rootPath;
     }
 
-    public void setVersionCode(int versionCode) {
-        this.versionCode = versionCode;
+    public void setRootPath(String rootPath) {
+        this.rootPath = rootPath;
     }
 
-    public String getVersionName() {
-        return versionName;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setVersionName(String versionName) {
-        this.versionName = versionName;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

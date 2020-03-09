@@ -30,7 +30,6 @@ public interface ReportMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int addDailyReport(ProjectDailyReport dailyReport);
 
-
     /**
      * 添加日报上传的音视频记录
      *

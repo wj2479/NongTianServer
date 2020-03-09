@@ -28,7 +28,6 @@
         where pid = #{pid}
         group by schedule
         order by schedule
-
     </select>
 
 

@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     username: root
-    password: 1234
+    password: 123456
     url: jdbc:mysql://localhost:3306/nydb?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
@@ -20,13 +20,13 @@ spring:
     #在Springboot中可以直接在配置文件中覆盖默认的静态资源路径的配置信息
     #配置静态资源目录，以逗号分隔多个目录,
     #加file：是因为后面指定的是一个具体的硬盘路径，其他的使用classpath指的是系统环境变量
-    static-locations: file:E:/images/
+    static-locations: file:E:/upload/
   servlet:
     multipart:
       #单文件限制大小
-      max-file-size: 10MB
+      max-file-size: 100MB
       #一次请求限制大小
-      max-request-size: 100MB
+      max-request-size: 200MB
 
 
 mybatis:
@@ -37,8 +37,12 @@ mybatis:
 #自定义配置文件
 myconfig:
   #文件上传后存储路径(window是d/e/f盘， linux是/)
-  fileUploadFolder: E://images/
+  fileUploadFolder: E://upload/
   #浏览器访问
-  fileUri: /resource/
+  fileUri: /upload/
   #静态资源对外暴露的访问路径(访问图片的路径)
-  fileStaticAccessPath: /resource/**
+  fileStaticAccessPath: /upload/**
+  #app上传的路径
+  appFolder: /app/
+  #图片上传的路径
+  imageFolder: /images/

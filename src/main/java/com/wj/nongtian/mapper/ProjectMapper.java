@@ -2,6 +2,7 @@ package com.wj.nongtian.mapper;
 
 import com.wj.nongtian.entity.Project;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
@@ -23,6 +24,15 @@ public interface ProjectMapper {
      * @return
      */
     List<String> getProjectIdByUserId(@Param("uid") int uid);
+
+    /**
+     * 根据项目的ID 获取所属用户ID
+     *
+     * @param pid
+     * @return
+     */
+    @Select("select uid from project_user where pid = #{pid}")
+    List<String> getUserIdByProjectId(@Param("pid")int pid);
 
     /**
      * 根据项目的ID 获取项目信息
@@ -82,4 +92,5 @@ public interface ProjectMapper {
 
     @Update("update project_info set process = #{schedule} where id= #{pid}")
     int updateProjectSchedule(@Param("pid") int pid, @Param("schedule") int schedule);
+
 }
