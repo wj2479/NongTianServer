@@ -47,6 +47,14 @@
              where project_info.id = #{pid}
      </select>
 
+    <select id="getProjectsByAreaId" resultMap="project_result_map">
+             select project_info.*, area.id as aid,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name
+             from project_info
+             left join area
+             on project_info.areaid = area.id
+             where project_info.areaid = #{areaId}
+     </select>
+
     <select id="getSubProjectsByParentId" resultMap="project_result_map">
              select project_info.*, area.id as aid,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name
              from project_info

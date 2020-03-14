@@ -32,7 +32,7 @@ public interface ProjectMapper {
      * @return
      */
     @Select("select uid from project_user where pid = #{pid}")
-    List<String> getUserIdByProjectId(@Param("pid")int pid);
+    List<String> getUserIdByProjectId(@Param("pid") int pid);
 
     /**
      * 根据项目的ID 获取项目信息
@@ -93,4 +93,11 @@ public interface ProjectMapper {
     @Update("update project_info set process = #{schedule} where id= #{pid}")
     int updateProjectSchedule(@Param("pid") int pid, @Param("schedule") int schedule);
 
+    /**
+     * 根据地区ID 获取本地区的项目列表
+     *
+     * @param areaId
+     * @return
+     */
+    List<Project> getProjectsByAreaId(@Param("areaId") int areaId);
 }

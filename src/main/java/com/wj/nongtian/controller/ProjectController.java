@@ -2,6 +2,7 @@ package com.wj.nongtian.controller;
 
 import com.wj.nongtian.ResultCode;
 import com.wj.nongtian.entity.Project;
+import com.wj.nongtian.entity.Role;
 import com.wj.nongtian.entity.User;
 import com.wj.nongtian.service.AreaService;
 import com.wj.nongtian.service.ProjectService;
@@ -38,11 +39,31 @@ public class ProjectController {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
 
-        int pid = projectService.getProjectIdByUserId(uid);
-        if (pid < 0) {
-            return JsonUtils.getJsonResult(ResultCode.RESULT_PROJECT_NOT_FOUND);
+        User user = userService.getUser(uid);
+
+        logger.info("查询的用户信息:" + user.toString());
+
+        if (user != null) {
+            // 如果是监理用户  就获取监理对应的项目
+            if (user.getRole().getCode() == Role.CODE.SUPERVISOR.getValue()) {
+                int pid = projectService.getProjectIdByUserId(uid);
+                if (pid < 0) {
+                    return JsonUtils.getJsonResult(ResultCode.RESULT_PROJECT_NOT_FOUND);
+                }
+                return getProjectById(pid);
+            } else {
+                // 如果是管理员  就查询所管辖的项目
+
+                List<Project> projects = projectService.getProjectsByAreaId(user.getArea().getId());
+                if (projects != null && projects.size() > 0) {
+                    return JsonUtils.getJsonResult(ResultCode.RESULT_OK, projects.get(0));
+                }
+
+                return JsonUtils.getJsonResult(ResultCode.RESULT_PROJECT_NOT_FOUND);
+            }
+        } else {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "没有找到该用户");
         }
-        return getProjectById(pid);
     }
 
     @RequestMapping(value = "/getProjectById", method = RequestMethod.GET)

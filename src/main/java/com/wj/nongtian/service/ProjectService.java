@@ -16,6 +16,8 @@ public interface ProjectService {
 
     List<Project> getSubProjectsByParentId(int pid);
 
+    List<Project> getProjectsByAreaId(int areaId);
+
     int getProjectRank(int pid);
 
     List<Project> getTop1ProjectInArea(int pid);
@@ -24,5 +26,5 @@ public interface ProjectService {
 
     boolean setProjectPlanThisMonth(int pid, int uid, int target);
 
-    int updateProjectSchedule(int pid,int schedule);
+    int updateProjectSchedule(int pid, int schedule);
 }

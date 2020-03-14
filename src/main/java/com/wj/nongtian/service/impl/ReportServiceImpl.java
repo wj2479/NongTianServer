@@ -1,5 +1,6 @@
 package com.wj.nongtian.service.impl;
 
+import com.wj.nongtian.entity.DaySchedule;
 import com.wj.nongtian.entity.ProjectDailyReport;
 import com.wj.nongtian.entity.ReportMedia;
 import com.wj.nongtian.mapper.ReportMapper;
@@ -26,6 +27,17 @@ public class ReportServiceImpl implements ReportService {
             e.printStackTrace();
         }
         return dailyReports;
+    }
+
+    @Override
+    public List<DaySchedule> getDailySchedule(int pid) {
+        List<DaySchedule> daySchedules = reportMapper.getDailySchedule(pid);
+        return daySchedules;
+    }
+
+    @Override
+    public List<ReportMedia> getDailyMedias(int pid, String date) {
+        return reportMapper.getDailyMedias(pid, date);
     }
 
     @Override

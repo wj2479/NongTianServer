@@ -62,6 +62,40 @@ public class UserController {
         return result;
     }
 
+    @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
+    public String changePassword(String username, String oldPwd, String newPwd) {
+        if (StringUtils.isEmpty(username)) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_USERNAME_EMPTY);
+        }
+        // 判断新旧密码是不是一致
+        if (oldPwd.equals(newPwd)) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED, "新旧密码一致");
+        }
+
+        // 首先判断用户是不是存在
+        boolean isExist = userService.isUserExist(username);
+
+        if (!isExist) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_USERNAME_NOT_FOUND);
+        }
+
+        User user = userService.login(username, oldPwd);
+
+        String result = "";
+        if (user != null) {
+            boolean isSuccess = userService.setPassword(username, newPwd);
+            if (isSuccess) {
+                result = JsonUtils.getJsonResult(ResultCode.RESULT_OK, "密码修改成功");
+            } else {
+                result = JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED, "密码修改失败");
+            }
+
+        } else {
+            result = JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED, "旧密码错误");
+        }
+        return result;
+    }
+
 
     @RequestMapping(value = "/getSubAreaUser", method = RequestMethod.GET)
     public String getSubAreaUser(Integer uid) {

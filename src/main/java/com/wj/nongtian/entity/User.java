@@ -66,6 +66,11 @@ public class User {
     private String avater = "";
 
     /**
+     * 监理公司
+     */
+    private Company company;
+
+    /**
      * 创建时间
      */
     private String createTime = "";

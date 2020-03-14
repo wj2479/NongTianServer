@@ -43,6 +43,6 @@ myconfig:
   #静态资源对外暴露的访问路径(访问图片的路径)
   fileStaticAccessPath: /upload/**
   #app上传的路径
-  appFolder: /app/
+  appFolder: app/
   #图片上传的路径
-  imageFolder: /images/
+  imageFolder: images/

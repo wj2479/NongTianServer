@@ -37,11 +37,6 @@ public class UserServiceImpl implements UserService {
     public User login(String username, String password) {
         String salt = userMapper.getSalt(username);
         if (StringUtils.isEmpty(salt)) { // 如果密码没有加盐 就直接登录
-            // 随机长度的随机数
-            int randomLen = new Random().nextInt(3) + 8;
-            salt = RandomUtils.getRandomString(randomLen);
-            String sha1 = DigestUtils.sha1Hex(password + salt);
-
             return userMapper.getLoginInfo(username, password);
         } else {
             String sha1 = DigestUtils.sha1Hex(password + salt);
@@ -57,6 +52,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUsersByAreaId(int areaId) {
         return userMapper.getUsersByAreaId(areaId);
+    }
+
+    @Override
+    public boolean setPassword(String username, String newPwd) {
+
+        // 设置密码的时候 重新生成salt值
+        int randomLen = new Random().nextInt(3) + 8;
+        String salt = RandomUtils.getRandomString(randomLen);
+        String password = DigestUtils.sha1Hex(newPwd + salt);
+
+        int count = userMapper.updateUserPassword(username, salt, password);
+        if (count == 1) {
+            return true;
+        }
+        return false;
     }
 
 

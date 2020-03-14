@@ -1,5 +1,6 @@
 package com.wj.nongtian.mapper;
 
+import com.wj.nongtian.entity.DaySchedule;
 import com.wj.nongtian.entity.ProjectDailyReport;
 import com.wj.nongtian.entity.ReportMedia;
 import org.apache.ibatis.annotations.Insert;
@@ -49,4 +50,22 @@ public interface ReportMapper {
      */
     @Select("select * from report_picture_video where rid=#{rid}")
     List<ReportMedia> getReportMedias(@Param("rid") int rid);
+
+    @Select("select max(schedule) schedule, date ,IFNULL(updatetime,createtime) updateTime\n" +
+            "from (select project_day_report.*,date_format(IFNULL(updatetime,createtime),'%Y-%m-%d') as date \n" +
+            "\tfrom project_day_report\n" +
+            "\twhere pid = #{pid}) p\n" +
+            "GROUP BY date \n" +
+            "order by date ")
+    List<DaySchedule> getDailySchedule(@Param("pid") int pid);
+
+    @Select("select * \n" +
+            "from (\n" +
+            "\tselect report_picture_video.*,date_format(report_picture_video.createtime,'%Y-%m-%d') as date \n" +
+            "\tfrom project_day_report,report_picture_video\n" +
+            "\twhere project_day_report.pid= #{pid} and project_day_report.id = report_picture_video.rid \n" +
+            "\torder by createtime desc\n" +
+            ") p \n" +
+            "where p.date = #{date}")
+    List<ReportMedia> getDailyMedias(@Param("pid") int pid, @Param("date") String date);
 }

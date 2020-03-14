@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * App管理相关请求
@@ -44,7 +43,7 @@ public class AppController {
         base.setCreateTime(appUpdate.getCreateTime());
         base.setUpdateStatus(appUpdate.getUpdateStatus());
 
-        String url = "http://" + request.getServerName() + ":" + request.getServerPort() + mConfig.getAppFolder()  + appUpdate.getFileName();
+        String url = "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + mConfig.getAppFolder() + appUpdate.getFileName();
         base.setUrl(url);
 
         if (appUpdate != null) {

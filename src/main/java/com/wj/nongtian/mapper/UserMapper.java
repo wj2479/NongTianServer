@@ -2,6 +2,7 @@ package com.wj.nongtian.mapper;
 
 import com.wj.nongtian.entity.User;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -56,4 +57,14 @@ public interface UserMapper {
      */
     List<User> getUsersByAreaId(@Param("areaId") int areaId);
 
+    /**
+     * 修改用户密码
+     *
+     * @param username
+     * @param salt
+     * @param password
+     * @return
+     */
+    @Update("update user_info set salt = #{salt} , password = #{password} where username = #{username}")
+    int updateUserPassword(@Param("username") String username, @Param("salt") String salt, @Param("password") String password);
 }

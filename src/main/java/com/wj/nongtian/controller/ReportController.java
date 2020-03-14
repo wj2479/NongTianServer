@@ -1,8 +1,9 @@
 package com.wj.nongtian.controller;
 
 import com.alibaba.druid.util.StringUtils;
-import com.wj.nongtian.config.MyConfig;
 import com.wj.nongtian.ResultCode;
+import com.wj.nongtian.config.MyConfig;
+import com.wj.nongtian.entity.DaySchedule;
 import com.wj.nongtian.entity.ProjectDailyReport;
 import com.wj.nongtian.entity.ReportMedia;
 import com.wj.nongtian.entity.ResponseMedia;
@@ -47,6 +48,7 @@ public class ReportController {
     @Autowired
     private MyConfig mConfig;
 
+    @Deprecated
     @RequestMapping(value = "/getDailyReports", method = RequestMethod.GET)
     public String getDailyReports(Integer pid, HttpServletRequest request) {
         if (pid == null || pid < 0) {
@@ -68,7 +70,7 @@ public class ReportController {
                         responseMedia.setMd5(media.getMd5());
                         responseMedia.setType(media.getType());
                         // 重新封装返回的URL
-                        String url = "http://" + request.getServerName() + ":" + request.getServerPort() + mConfig.getImageFolder() + media.getPath();
+                        String url = "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + mConfig.getImageFolder() + media.getPath();
                         responseMedia.setUrl(url);
                         list.add(responseMedia);
                     }
@@ -147,6 +149,40 @@ public class ReportController {
 
     }
 
+    @RequestMapping(value = "/getDailySchedule", method = RequestMethod.GET)
+    public String getDailySchedule(Integer pid, HttpServletRequest request) {
+        if (pid == null || pid < 0) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
+        }
+
+        String result = "";
+        List<DaySchedule> daySchedules = reportService.getDailySchedule(pid);
+
+        if (daySchedules != null) {
+            for (DaySchedule daySchedule : daySchedules) {
+                List<ReportMedia> mediaList = reportService.getDailyMedias(pid, daySchedule.getDate());
+                if (mediaList != null && mediaList.size() > 0) {
+                    ReportMedia media = mediaList.get(0);
+                    ResponseMedia responseMedia = new ResponseMedia();
+                    responseMedia.setName(media.getName());
+                    responseMedia.setMd5(media.getMd5());
+                    responseMedia.setType(media.getType());
+                    // 重新封装返回的URL
+                    String url = "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + mConfig.getImageFolder() + media.getPath();
+                    responseMedia.setUrl(url);
+                    daySchedule.setLastMedia(responseMedia);
+                }
+            }
+        }
+
+        if (daySchedules != null) {
+            result = JsonUtils.getJsonResult(ResultCode.RESULT_OK, daySchedules);
+        } else {
+            result = JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "没有找到结果");
+        }
+        return result;
+    }
+
     @RequestMapping(value = "/uploadDailyReport", method = RequestMethod.POST)
     public String uploadDailyReport(ProjectDailyReport dailyReport, MultipartFile[] files, HttpServletRequest request) {
         // 判断项目ID是不是正确
@@ -175,7 +211,7 @@ public class ReportController {
 
             if (files != null && files.length > 0) {
                 // 配置文件配置的上传文件根目录
-                String configPath = mConfig.getFileUploadFolder()+mConfig.getImageFolder();
+                String configPath = mConfig.getFileUploadFolder() + mConfig.getImageFolder();
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH) + 1;
 

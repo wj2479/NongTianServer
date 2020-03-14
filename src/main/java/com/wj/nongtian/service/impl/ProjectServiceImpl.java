@@ -66,6 +66,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public List<Project> getProjectsByAreaId(int areaId) {
+        return projectMapper.getProjectsByAreaId(areaId);
+    }
+
+    @Override
     public int getProjectRank(int pid) {
         Project project = getProjectById(pid);
         if (project != null) {

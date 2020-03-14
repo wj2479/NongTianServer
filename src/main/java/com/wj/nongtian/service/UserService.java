@@ -17,4 +17,5 @@ public interface UserService {
 
     List<User> getUsersByAreaId(int areaId);
 
+    boolean setPassword(String username, String newPwd);
 }
