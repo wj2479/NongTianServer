@@ -51,7 +51,7 @@ public interface ReportMapper {
     @Select("select * from report_picture_video where rid=#{rid}")
     List<ReportMedia> getReportMedias(@Param("rid") int rid);
 
-    @Select("select max(schedule) schedule, date ,IFNULL(updatetime,createtime) updateTime\n" +
+    @Select("select max(schedule) schedule, date ,max(createtime) updateTime\n" +
             "from (select project_day_report.*,date_format(IFNULL(updatetime,createtime),'%Y-%m-%d') as date \n" +
             "\tfrom project_day_report\n" +
             "\twhere pid = #{pid}) p\n" +

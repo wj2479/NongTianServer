@@ -50,6 +50,10 @@ public class Track {
      */
     private String locationType;
     /**
+     * 地址信息
+     */
+    private String address;
+    /**
      * 备注信息
      */
     private String remark;
@@ -160,5 +164,13 @@ public class Track {
 
     public void setDirection(float direction) {
         this.direction = direction;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

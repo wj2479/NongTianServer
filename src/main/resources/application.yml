@@ -20,14 +20,17 @@ spring:
     #在Springboot中可以直接在配置文件中覆盖默认的静态资源路径的配置信息
     #配置静态资源目录，以逗号分隔多个目录,
     #加file：是因为后面指定的是一个具体的硬盘路径，其他的使用classpath指的是系统环境变量
-    static-locations: file:E:/upload/
+    static-locations: file:D:/upload/
   servlet:
     multipart:
       #单文件限制大小
       max-file-size: 100MB
       #一次请求限制大小
       max-request-size: 200MB
-
+  mvc:
+    view:
+      prefix: /pages/
+      suffix: .html
 
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
@@ -37,7 +40,7 @@ mybatis:
 #自定义配置文件
 myconfig:
   #文件上传后存储路径(window是d/e/f盘， linux是/)
-  fileUploadFolder: E://upload/
+  fileUploadFolder: D://upload/
   #浏览器访问
   fileUri: /upload/
   #静态资源对外暴露的访问路径(访问图片的路径)
@@ -47,4 +50,4 @@ myconfig:
   #图片上传的路径
   imageFolder: images/
   #服务器地址，返回资源下载地址的时候使用, 如果为空 就使用本机的Ip
-  baseUrl: ''
+  baseUrl: http://39.99.168.20:8088/

@@ -12,8 +12,8 @@ public interface TrackMapper {
      * @param track
      * @return
      */
-    @Insert("insert into tracks (uid,accuracy,lng,lat,deviceVersion,direction,deviceModel,deviceFacturer,locationType,speed,locationTime,remark,createtime)\n" +
-            "values(#{uid},#{accuracy},#{lng},#{lat},#{deviceVersion},#{direction},#{deviceModel},#{deviceFacturer},#{locationType},#{speed},#{locationTime},#{remark},now())")
+    @Insert("insert into tracks (uid,accuracy,lng,lat,deviceVersion,direction,deviceModel,deviceFacturer,locationType,speed,locationTime,address,remark,createtime)\n" +
+            "values(#{uid},#{accuracy},#{lng},#{lat},#{deviceVersion},#{direction},#{deviceModel},#{deviceFacturer},#{locationType},#{speed},#{locationTime},#{address},#{remark},now())")
     //加入该注解可以保持对象后，查看对象插入id
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int addTrack(Track track);
