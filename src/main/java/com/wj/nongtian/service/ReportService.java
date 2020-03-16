@@ -12,6 +12,15 @@ public interface ReportService {
     List<ProjectDailyReport> getDailyReports(int pid);
 
     /**
+     * 获取指定日期上传的日报列表
+     *
+     * @param pid
+     * @param date
+     * @return
+     */
+    List<ProjectDailyReport> getDailyReports(int pid, String date);
+
+    /**
      * 获取每日的项目进度汇总
      *
      * @param pid

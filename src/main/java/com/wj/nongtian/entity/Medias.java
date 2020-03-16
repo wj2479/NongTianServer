@@ -18,6 +18,10 @@ public class Medias {
      */
     private String name = "";
     /**
+     * 文件下载地址
+     */
+    private String url = "";
+    /**
      * md5校验码
      */
     private String md5 = "";
@@ -64,5 +68,13 @@ public class Medias {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

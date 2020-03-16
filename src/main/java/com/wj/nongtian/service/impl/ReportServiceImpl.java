@@ -30,6 +30,17 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    public List<ProjectDailyReport> getDailyReports(int pid, String date) {
+        List<ProjectDailyReport> dailyReports = null;
+        try {
+            dailyReports = reportMapper.getDailyReportByProjectIdAndDate(pid, date);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dailyReports;
+    }
+
+    @Override
     public List<DaySchedule> getDailySchedule(int pid) {
         List<DaySchedule> daySchedules = reportMapper.getDailySchedule(pid);
         return daySchedules;

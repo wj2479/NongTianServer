@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -48,15 +50,18 @@ public class ReportController {
     @Autowired
     private MyConfig mConfig;
 
-    @Deprecated
     @RequestMapping(value = "/getDailyReports", method = RequestMethod.GET)
-    public String getDailyReports(Integer pid, HttpServletRequest request) {
+    public String getDailyReports(Integer pid, String date, HttpServletRequest request) {
         if (pid == null || pid < 0) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
 
+        if (StringUtils.isEmpty(date) || !date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
+        }
+
         String result = "";
-        List<ProjectDailyReport> dailyReports = reportService.getDailyReports(pid);
+        List<ProjectDailyReport> dailyReports = reportService.getDailyReports(pid, date);
 
         if (dailyReports != null) {
             for (ProjectDailyReport dailyReport : dailyReports) {
@@ -69,9 +74,29 @@ public class ReportController {
                         responseMedia.setName(media.getName());
                         responseMedia.setMd5(media.getMd5());
                         responseMedia.setType(media.getType());
-                        // 重新封装返回的URL
-                        String url = "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + mConfig.getImageFolder() + media.getPath();
-                        responseMedia.setUrl(url);
+                        if (StringUtils.isEmpty(media.getUrl())) {
+                            // 重新封装返回的URL
+                            StringBuilder url = new StringBuilder();
+                            if (StringUtils.isEmpty(mConfig.getBaseUrl())) {
+                                url.append("http://");
+                                try {
+                                    InetAddress address = InetAddress.getLocalHost();
+                                    url.append(address.getHostAddress());
+                                } catch (UnknownHostException e) {
+                                    url.append(request.getServerName());
+                                }
+                                url.append(":");
+                                url.append(request.getServerPort());
+                                url.append("/");
+
+                            } else {
+                                url.append(mConfig.getBaseUrl());
+                            }
+                            url.append(mConfig.getImageFolder()).append(media.getPath());
+                            responseMedia.setUrl(url.toString());
+                        } else {
+                            responseMedia.setUrl(media.getUrl());
+                        }
                         list.add(responseMedia);
                     }
                     dailyReport.setMediaList(list);
@@ -155,6 +180,8 @@ public class ReportController {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
 
+        logger.info("请求每日汇总数据:" + pid);
+
         String result = "";
         List<DaySchedule> daySchedules = reportService.getDailySchedule(pid);
 
@@ -167,9 +194,29 @@ public class ReportController {
                     responseMedia.setName(media.getName());
                     responseMedia.setMd5(media.getMd5());
                     responseMedia.setType(media.getType());
-                    // 重新封装返回的URL
-                    String url = "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + mConfig.getImageFolder() + media.getPath();
-                    responseMedia.setUrl(url);
+                    if (StringUtils.isEmpty(media.getUrl())) {
+                        // 重新封装返回的URL
+                        StringBuilder url = new StringBuilder();
+                        if (StringUtils.isEmpty(mConfig.getBaseUrl())) {
+                            url.append("http://");
+                            try {
+                                InetAddress address = InetAddress.getLocalHost();
+                                url.append(address.getHostAddress());
+                            } catch (UnknownHostException e) {
+                                url.append(request.getServerName());
+                            }
+                            url.append(":");
+                            url.append(request.getServerPort());
+                            url.append("/");
+
+                        } else {
+                            url.append(mConfig.getBaseUrl());
+                        }
+                        url.append(mConfig.getImageFolder()).append(media.getPath());
+                        responseMedia.setUrl(url.toString());
+                    } else {
+                        responseMedia.setUrl(media.getUrl());
+                    }
                     daySchedule.setLastMedia(responseMedia);
                 }
             }
@@ -184,7 +231,7 @@ public class ReportController {
     }
 
     @RequestMapping(value = "/uploadDailyReport", method = RequestMethod.POST)
-    public String uploadDailyReport(ProjectDailyReport dailyReport, MultipartFile[] files, HttpServletRequest request) {
+    public String uploadDailyReport(ProjectDailyReport dailyReport, MultipartFile[] files) {
         // 判断项目ID是不是正确
         if (dailyReport.getPid() == 0 || !projectService.isProjectExist(dailyReport.getPid())) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
@@ -200,8 +247,6 @@ public class ReportController {
         }
 
         System.out.println("当前上传的对象：" + dailyReport.toString());
-
-        System.out.println("当前：" + request.getScheme() + "  " + request.getServerName());
 
         try {
             int id = reportService.addDailyReport(dailyReport);

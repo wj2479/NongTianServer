@@ -96,7 +96,6 @@ public class UserController {
         return result;
     }
 
-
     @RequestMapping(value = "/getSubAreaUser", method = RequestMethod.GET)
     public String getSubAreaUser(Integer uid) {
         if (uid == null || !userService.isUserExist(uid)) {
@@ -120,6 +119,30 @@ public class UserController {
         }
         return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "获取失败");
     }
+
+    @RequestMapping(value = "/getUserById", method = RequestMethod.GET)
+    public String getUserById(Integer uid) {
+        if (uid == null || !userService.isUserExist(uid)) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
+        }
+
+        try {
+            User user = userService.getUser(uid);
+
+            if (user != null) {
+                logger.info("查询到用户:" + user.toString());
+                areaService.initParentAreas(user.getArea());
+
+                return JsonUtils.getJsonResult(ResultCode.RESULT_OK, user);
+            } else {
+                return JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED);
+            }
+        } catch (Exception e) {
+
+        }
+        return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "获取失败");
+    }
+
 
     /**
      * 递归的填充下级用户

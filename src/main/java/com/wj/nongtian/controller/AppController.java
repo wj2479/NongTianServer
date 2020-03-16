@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * App管理相关请求
@@ -43,8 +45,29 @@ public class AppController {
         base.setCreateTime(appUpdate.getCreateTime());
         base.setUpdateStatus(appUpdate.getUpdateStatus());
 
-        String url = "http://" + request.getServerName() + ":" + request.getServerPort() + "/" + mConfig.getAppFolder() + appUpdate.getFileName();
-        base.setUrl(url);
+        if (StringUtils.isEmpty(appUpdate.getUrl())) {
+            // 重新封装返回的URL
+            StringBuilder url = new StringBuilder();
+            if (StringUtils.isEmpty(mConfig.getBaseUrl())) {
+                url.append("http://");
+                try {
+                    InetAddress address = InetAddress.getLocalHost();
+                    url.append(address.getHostAddress());
+                } catch (UnknownHostException e) {
+                    url.append(request.getServerName());
+                }
+                url.append(":");
+                url.append(request.getServerPort());
+                url.append("/");
+            } else {
+                url.append(mConfig.getBaseUrl());
+            }
+            url.append(mConfig.getAppFolder()).append(appUpdate.getFileName());
+
+            base.setUrl(url.toString());
+        } else {
+            base.setUrl(appUpdate.getUrl());
+        }
 
         if (appUpdate != null) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_OK, base);

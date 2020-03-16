@@ -31,6 +31,11 @@ public class MyConfig {
      */
     String imageFolder;
 
+    /**
+     * 服务器地址
+     */
+    String baseUrl;
+
     public String getFileUploadFolder() {
         return fileUploadFolder;
     }
@@ -69,5 +74,13 @@ public class MyConfig {
 
     public void setImageFolder(String imageFolder) {
         this.imageFolder = imageFolder;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 }

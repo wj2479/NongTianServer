@@ -55,8 +55,9 @@ public interface ReportMapper {
             "from (select project_day_report.*,date_format(IFNULL(updatetime,createtime),'%Y-%m-%d') as date \n" +
             "\tfrom project_day_report\n" +
             "\twhere pid = #{pid}) p\n" +
+            "\twhere date is not NULL\n" +
             "GROUP BY date \n" +
-            "order by date ")
+            "order by date desc")
     List<DaySchedule> getDailySchedule(@Param("pid") int pid);
 
     @Select("select * \n" +
@@ -68,4 +69,14 @@ public interface ReportMapper {
             ") p \n" +
             "where p.date = #{date}")
     List<ReportMedia> getDailyMedias(@Param("pid") int pid, @Param("date") String date);
+
+    @Select("select * from \n" +
+            "(\n" +
+            " select project_day_report.*,date_format(IFNULL(updatetime,createtime),'%Y-%m-%d') as date , IFNULL(updatetime,createtime) time\n" +
+            " from project_day_report\n" +
+            " where pid = #{pid} \n" +
+            ") p \n" +
+            "where date = #{date}  \n" +
+            "order by time ")
+    List<ProjectDailyReport> getDailyReportByProjectIdAndDate(@Param("pid") int pid, @Param("date") String date);
 }
