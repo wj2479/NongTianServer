@@ -9,7 +9,6 @@ import com.wj.nongtian.service.AreaService;
 import com.wj.nongtian.service.UserService;
 import com.wj.nongtian.utils.JsonUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,10 +25,13 @@ public class UserController {
 
     private Logger logger = Logger.getLogger(getClass());
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private AreaService areaService;
+    private final UserService userService;
+    private final AreaService areaService;
+
+    public UserController(UserService userService, AreaService areaService) {
+        this.userService = userService;
+        this.areaService = areaService;
+    }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(String username, String password) {
@@ -175,6 +177,5 @@ public class UserController {
         }
 
     }
-
 
 }

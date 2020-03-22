@@ -8,7 +8,6 @@ import com.wj.nongtian.entity.BaseAppUpdate;
 import com.wj.nongtian.service.AppService;
 import com.wj.nongtian.utils.JsonUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,47 +28,50 @@ public class AppController {
 
     private Logger logger = Logger.getLogger(getClass());
 
-    @Autowired
-    private AppService appService;
-    @Autowired
-    private MyConfig mConfig;
+    private final AppService appService;
+    private final MyConfig mConfig;
+
+    public AppController(AppService appService, MyConfig mConfig) {
+        this.appService = appService;
+        this.mConfig = mConfig;
+    }
 
     @RequestMapping(value = "/getUpdateInfo", method = RequestMethod.GET)
     public String getUpdateInfo(HttpServletRequest request) {
         AppUpdate appUpdate = appService.getUpdateInfo();
 
-        BaseAppUpdate base = new BaseAppUpdate();
-        base.setContent(appUpdate.getContent());
-        base.setVersionCode(appUpdate.getVersionCode());
-        base.setVersionName(appUpdate.getVersionName());
-        base.setCreateTime(appUpdate.getCreateTime());
-        base.setUpdateStatus(appUpdate.getUpdateStatus());
-
-        if (StringUtils.isEmpty(appUpdate.getUrl())) {
-            // 重新封装返回的URL
-            StringBuilder url = new StringBuilder();
-            if (StringUtils.isEmpty(mConfig.getBaseUrl())) {
-                url.append("http://");
-                try {
-                    InetAddress address = InetAddress.getLocalHost();
-                    url.append(address.getHostAddress());
-                } catch (UnknownHostException e) {
-                    url.append(request.getServerName());
-                }
-                url.append(":");
-                url.append(request.getServerPort());
-                url.append("/");
-            } else {
-                url.append(mConfig.getBaseUrl());
-            }
-            url.append(mConfig.getAppFolder()).append(appUpdate.getFileName());
-
-            base.setUrl(url.toString());
-        } else {
-            base.setUrl(appUpdate.getUrl());
-        }
-
         if (appUpdate != null) {
+            BaseAppUpdate base = new BaseAppUpdate();
+            base.setContent(appUpdate.getContent());
+            base.setVersionCode(appUpdate.getVersionCode());
+            base.setVersionName(appUpdate.getVersionName());
+            base.setCreateTime(appUpdate.getCreateTime());
+            base.setUpdateStatus(appUpdate.getUpdateStatus());
+
+            if (StringUtils.isEmpty(appUpdate.getUrl())) {
+                // 重新封装返回的URL
+                StringBuilder url = new StringBuilder();
+                if (StringUtils.isEmpty(mConfig.getBaseUrl())) {
+                    url.append("http://");
+                    try {
+                        InetAddress address = InetAddress.getLocalHost();
+                        url.append(address.getHostAddress());
+                    } catch (UnknownHostException e) {
+                        url.append(request.getServerName());
+                    }
+                    url.append(":");
+                    url.append(request.getServerPort());
+                    url.append("/");
+                } else {
+                    url.append(mConfig.getBaseUrl());
+                }
+                url.append(mConfig.getAppFolder()).append(appUpdate.getFileName());
+
+                base.setUrl(url.toString());
+            } else {
+                base.setUrl(appUpdate.getUrl());
+            }
+
             return JsonUtils.getJsonResult(ResultCode.RESULT_OK, base);
         } else {
             return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED);

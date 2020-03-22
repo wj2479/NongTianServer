@@ -6,7 +6,6 @@ import com.wj.nongtian.service.TrackService;
 import com.wj.nongtian.service.UserService;
 import com.wj.nongtian.utils.JsonUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,10 +19,13 @@ public class TrackController {
 
     private Logger logger = Logger.getLogger(getClass());
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private TrackService trackService;
+    private final UserService userService;
+    private final TrackService trackService;
+
+    public TrackController(UserService userService, TrackService trackService) {
+        this.userService = userService;
+        this.trackService = trackService;
+    }
 
     @RequestMapping(value = "/addTracks", method = RequestMethod.GET)
     public String addTracks(Track track) {

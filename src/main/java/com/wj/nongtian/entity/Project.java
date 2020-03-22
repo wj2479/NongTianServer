@@ -1,5 +1,7 @@
 package com.wj.nongtian.entity;
 
+import java.util.List;
+
 /**
  * 项目对象
  */
@@ -63,6 +65,11 @@ public class Project {
      * 更新时间
      */
     private String updateTime = "";
+
+    /**
+     * 项目日志列表
+     */
+    private List<ProjectDailyReport> reports = null;
 
     public int getId() {
         return id;
@@ -158,6 +165,14 @@ public class Project {
 
     public void setManager(User manager) {
         this.manager = manager;
+    }
+
+    public List<ProjectDailyReport> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<ProjectDailyReport> reports) {
+        this.reports = reports;
     }
 
     @Override

@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.wj</groupId>
     <artifactId>nongtian</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>Nongtian</name>
     <description>高标农田项目服务端</description>
     <!-- war包部署-->
@@ -21,17 +21,19 @@
     </properties>
 
     <dependencies>
+        <!-- 指定为Web应用，并启动一个内嵌的Servlet容器（默认是Tomcat）用于处理HTTP请求 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
 
+        <!-- springboot本身开发出来只支持3.0以上，为了让spring boot支持servlet2.5 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
@@ -125,8 +127,21 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
 
-    <plugins>
+        <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

@@ -8,7 +8,6 @@ import com.wj.nongtian.service.NotifyService;
 import com.wj.nongtian.service.UserService;
 import com.wj.nongtian.utils.JsonUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,10 +23,13 @@ public class NotifyController {
 
     private Logger logger = Logger.getLogger(getClass());
 
-    @Autowired
-    private NotifyService notifyService;
-    @Autowired
-    private UserService userService;
+    private final NotifyService notifyService;
+    private final UserService userService;
+
+    public NotifyController(NotifyService notifyService, UserService userService) {
+        this.notifyService = notifyService;
+        this.userService = userService;
+    }
 
     @RequestMapping(value = "/getPublishNotify", method = RequestMethod.GET)
     public String getPublishNotify(Integer uid) {

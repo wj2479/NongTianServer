@@ -9,7 +9,6 @@ import com.wj.nongtian.service.ProjectService;
 import com.wj.nongtian.service.UserService;
 import com.wj.nongtian.utils.JsonUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,12 +25,15 @@ public class ProjectController {
 
     private Logger logger = Logger.getLogger(getClass());
 
-    @Autowired
-    private ProjectService projectService;
-    @Autowired
-    private AreaService areaService;
-    @Autowired
-    private UserService userService;
+    private final ProjectService projectService;
+    private final AreaService areaService;
+    private final UserService userService;
+
+    public ProjectController(ProjectService projectService, AreaService areaService, UserService userService) {
+        this.projectService = projectService;
+        this.areaService = areaService;
+        this.userService = userService;
+    }
 
     @RequestMapping(value = "/getProjectByUserId", method = RequestMethod.GET)
     public String getProjectByUserId(Integer uid) {
@@ -40,30 +42,46 @@ public class ProjectController {
         }
 
         User user = userService.getUser(uid);
-
-        logger.info("查询的用户信息:" + user.toString());
+        logger.info("查询项目的用户信息:" + user.toString());
 
         if (user != null) {
-            // 如果是监理用户  就获取监理对应的项目
-            if (user.getRole().getCode() == Role.CODE.SUPERVISOR.getValue()) {
-                int pid = projectService.getProjectIdByUserId(uid);
-                if (pid < 0) {
-                    return JsonUtils.getJsonResult(ResultCode.RESULT_PROJECT_NOT_FOUND);
-                }
-                return getProjectById(pid);
+            Project project = getProjectByUser(user);
+            if (project != null) {
+                areaService.initParentAreas(project.getArea());
+                return JsonUtils.getJsonResult(ResultCode.RESULT_OK, project);
             } else {
-                // 如果是管理员  就查询所管辖的项目
-
-                List<Project> projects = projectService.getProjectsByAreaId(user.getArea().getId());
-                if (projects != null && projects.size() > 0) {
-                    return JsonUtils.getJsonResult(ResultCode.RESULT_OK, projects.get(0));
-                }
-
                 return JsonUtils.getJsonResult(ResultCode.RESULT_PROJECT_NOT_FOUND);
             }
         } else {
             return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "没有找到该用户");
         }
+    }
+
+    /**
+     * 根据用户获取项目
+     *
+     * @param user
+     * @return
+     */
+    private Project getProjectByUser(User user) {
+        if (user == null)
+            return null;
+
+        Project project = null;
+        // 如果是监理用户  就获取监理对应的项目
+        if (user.getRole().getCode() == Role.CODE.SUPERVISOR.getValue()) {
+            int pid = projectService.getProjectIdByUserId(user.getId());
+            if (pid > 0) {
+                project = projectService.getProjectById(pid);
+            }
+        } else {
+            // 如果是管理员  就查询所管辖的项目
+            List<Project> projects = projectService.getProjectsByAreaId(user.getArea().getId());
+            if (projects != null && projects.size() > 0) {
+                project = projects.get(0);
+            }
+        }
+        return project;
     }
 
     @RequestMapping(value = "/getProjectById", method = RequestMethod.GET)
@@ -73,10 +91,10 @@ public class ProjectController {
         }
 
         Project project = projectService.getProjectById(pid);
-        areaService.initParentAreas(project.getArea());
         if (project == null) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PROJECT_NOT_FOUND);
         }
+        areaService.initParentAreas(project.getArea());
         logger.info("工程信息:" + project.toString());
         return JsonUtils.getJsonResult(ResultCode.RESULT_OK, project);
     }

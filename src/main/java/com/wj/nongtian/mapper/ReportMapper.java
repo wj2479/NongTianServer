@@ -2,11 +2,9 @@ package com.wj.nongtian.mapper;
 
 import com.wj.nongtian.entity.DaySchedule;
 import com.wj.nongtian.entity.ProjectDailyReport;
+import com.wj.nongtian.entity.ReportComment;
 import com.wj.nongtian.entity.ReportMedia;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -79,4 +77,73 @@ public interface ReportMapper {
             "where date = #{date}  \n" +
             "order by time ")
     List<ProjectDailyReport> getDailyReportByProjectIdAndDate(@Param("pid") int pid, @Param("date") String date);
+
+    /**
+     * 获取项目的不合格记录
+     *
+     * @param ids id的列表  使用,分割
+     */
+    List<ProjectDailyReport> getUnqualifiedReports(@Param("ids") List<Integer> ids);
+
+    /**
+     * 获取项目的日报记录
+     *
+     * @param ids id的列表  使用,分割
+     */
+    List<ProjectDailyReport> getReportsByIds(@Param("ids") List<Integer> ids, @Param("check") int check);
+
+    @Select("select count(*) from user_focus_report where uid = #{uid} and rid = #{rid}")
+    boolean isReportFocused(@Param("uid") int uid, @Param("rid") int rid);
+
+    /**
+     * 删除关注日报
+     *
+     * @param uid
+     * @param rid
+     * @return
+     */
+
+    @Delete("delete from user_focus_report where uid = #{uid} and rid = #{rid} ")
+    int deleteFocusReport(@Param("uid") int uid, @Param("rid") int rid);
+
+    /**
+     * 添加关注日报
+     *
+     * @param uid
+     * @param rid
+     * @return
+     */
+    @Insert("insert into user_focus_report(uid,rid,createtime) values (#{uid},#{rid},now())")
+    int addFocusReport(@Param("uid") int uid, @Param("rid") int rid);
+
+    /**
+     * 查询用户关注的日报IDS
+     *
+     * @param uid
+     * @return
+     */
+    @Select("SELECT DISTINCT rid FROM user_focus_report WHERE uid = #{uid}")
+    List<Integer> getFocusReportIds(@Param("uid") int uid);
+
+    /**
+     * 插入日报评论
+     *
+     * @param reportComment
+     * @return
+     */
+    @Insert("insert into report_comment_content(rid,sender,content,createtime) values(#{rid},#{sender},#{content},now())")
+    //加入该注解可以保持对象后，查看对象插入id
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    int addReportComment(ReportComment reportComment);
+
+    @Insert("insert into report_comment_pics(cid,rootpath,path,`name`,md5,type,createtime) values(#{rid},#{rootPath},#{path},#{name},#{md5},#{type},now())")
+    //加入该注解可以保持对象后，查看对象插入id
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    int addCommentMedias(ReportMedia medias);
+
+    @Select("select * from report_comment_content where rid = #{rid} order by createtime desc ")
+    List<ReportComment> getReportComments(@Param("rid") int rid);
+
+    @Select("select * from report_comment_pics where cid=#{cid}")
+    List<ReportMedia> getCommentMedias(@Param("cid") int id);
 }

@@ -30,5 +30,18 @@
         order by schedule
     </select>
 
+    <select id="getUnqualifiedReports" resultType="com.wj.nongtian.entity.ProjectDailyReport">
+        select * from project_day_report where `check` = 2 and pid in
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getReportsByIds" resultType="com.wj.nongtian.entity.ProjectDailyReport">
+        select * from project_day_report where id in
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
 
 </mapper>

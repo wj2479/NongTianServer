@@ -2,6 +2,7 @@ package com.wj.nongtian.service.impl;
 
 import com.wj.nongtian.entity.DaySchedule;
 import com.wj.nongtian.entity.ProjectDailyReport;
+import com.wj.nongtian.entity.ReportComment;
 import com.wj.nongtian.entity.ReportMedia;
 import com.wj.nongtian.mapper.ReportMapper;
 import com.wj.nongtian.service.ReportService;
@@ -64,6 +65,58 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<ReportMedia> getReportMedias(int rid) {
         return reportMapper.getReportMedias(rid);
+    }
+
+    @Override
+    public List<ProjectDailyReport> getUnqualifiedReports(List<Integer> ids) {
+        return reportMapper.getUnqualifiedReports(ids);
+    }
+
+    @Override
+    public List<ProjectDailyReport> getReportsByIds(List<Integer> ids) {
+        return reportMapper.getReportsByIds(ids, -1);
+    }
+
+    @Override
+    public boolean isReportFocused(int uid, int rid) {
+        return reportMapper.isReportFocused(uid, rid);
+    }
+
+    @Override
+    public int focusReport(int uid, int rid, boolean isFocus) {
+        int count = 0;
+        if (isFocus) {
+            count = reportMapper.addFocusReport(uid, rid);
+        } else {
+            count = reportMapper.deleteFocusReport(uid, rid);
+        }
+
+        return count;
+    }
+
+    @Override
+    public List<Integer> getFocusReportIds(int uid) {
+        return reportMapper.getFocusReportIds(uid);
+    }
+
+    @Override
+    public int addReportComment(ReportComment reportComment) {
+        return reportMapper.addReportComment(reportComment);
+    }
+
+    @Override
+    public int addCommentMedias(ReportMedia medias) {
+        return reportMapper.addCommentMedias(medias);
+    }
+
+    @Override
+    public List<ReportComment> getReportComments(int rid) {
+        return reportMapper.getReportComments(rid);
+    }
+
+    @Override
+    public List<ReportMedia> getCommentMedias(int id) {
+        return reportMapper.getCommentMedias(id);
     }
 
 }
