@@ -44,4 +44,69 @@
         </foreach>
     </select>
 
+
+    <select id="getReportDayCount" resultType="com.wj.nongtian.entity.UserReportCount">
+        SELECT c.uid, c.nickName, COUNT(date) AS count
+        , SUM(pCount) sum,date
+        FROM (
+        SELECT user_info.id AS uid, user_info.nickname AS nickName, date
+        , IFNULL(picCount, 0) AS pCount
+        FROM user_info
+        LEFT JOIN (
+        SELECT *
+        FROM (
+        SELECT project_day_report.*, DATE_FORMAT(createtime, #{dateFormat}) AS date
+        , IFNULL(x.cunt, 0) AS picCount
+        FROM project_day_report
+        LEFT JOIN (
+        SELECT rid, COUNT(id) AS cunt
+        FROM report_picture_video
+        GROUP BY rid
+        ) x
+        ON project_day_report.id = x.rid
+        ) a
+        WHERE a.date = #{date}
+        ) b
+        ON user_info.id = b.uid
+        HAVING user_info.id IN
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ) c
+        GROUP BY uid, date
+        ORDER BY count
+    </select>
+
+    <select id="getReportCountBetween" resultType="com.wj.nongtian.entity.UserReportCount">
+        SELECT c.uid, c.nickName, COUNT(date) AS count
+        , SUM(pCount) AS sum
+        FROM (
+        SELECT user_info.id AS uid, user_info.nickname AS nickName, date
+        , IFNULL(picCount, 0) AS pCount
+        FROM user_info
+        LEFT JOIN (
+        SELECT *
+        FROM (
+        SELECT project_day_report.*, DATE_FORMAT(createtime, '%Y-%m-%d') AS date
+        , IFNULL(x.cunt, 0) AS picCount
+        FROM project_day_report
+        LEFT JOIN (
+        SELECT rid, COUNT(id) AS cunt
+        FROM report_picture_video
+        GROUP BY rid
+        ) x
+        ON project_day_report.id = x.rid
+        ) a
+        WHERE a.date between #{startDate} and #{endDate}
+        ) b
+        ON user_info.id = b.uid
+        HAVING user_info.id IN
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ) c
+        GROUP BY uid
+        ORDER BY count
+    </select>
+
 </mapper>

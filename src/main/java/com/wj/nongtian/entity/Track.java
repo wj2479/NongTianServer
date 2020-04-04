@@ -6,7 +6,7 @@ package com.wj.nongtian.entity;
 public class Track {
 
     /**
-     * 通知ID ，主键
+     * ID ，主键
      */
     private int id;
     /**
@@ -61,6 +61,11 @@ public class Track {
      * 运动方向
      */
     private float direction;
+
+    /**
+     * 创建时间
+     */
+    private String createTime = "";
 
     public int getId() {
         return id;
@@ -172,5 +177,13 @@ public class Track {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 }

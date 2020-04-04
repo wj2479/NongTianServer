@@ -73,7 +73,7 @@
         where user_info.id = #{uid}
     </select>
 
-    <select id="getUsersByAreaId"  resultMap="user_result_map">
+    <select id="getUsersByAreaId" resultMap="user_result_map">
         select user_info.*,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name,role.code,role.level,role.desc
         from user_info,area,role
         where user_info.areaid = #{areaId}
@@ -81,5 +81,25 @@
         and user_info.areaid = area.id
 --         and (role.`code` = 2  or role.`code` = 1)
     </select>
+
+    <update id="updateUserInfo">
+        update user_info
+        <!-- set 能够智能的去掉最后一个,-->
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+        </set>
+        where id = #{uid}
+    </update>
 
 </mapper>

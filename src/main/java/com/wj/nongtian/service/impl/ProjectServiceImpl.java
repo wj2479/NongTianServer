@@ -121,10 +121,6 @@ public class ProjectServiceImpl implements ProjectService {
     public int updateProjectSchedule(int pid, int schedule) {
         Project project = projectMapper.getProjectById(pid);
         if (project != null) {
-            if (project.getProcess() == schedule) {
-                return 1;
-            }
-
             int num = projectMapper.updateProjectSchedule(pid, schedule);
             logger.info("更新项目进度:" + pid + "-->" + schedule);
 

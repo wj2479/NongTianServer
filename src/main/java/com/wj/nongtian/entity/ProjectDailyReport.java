@@ -59,6 +59,11 @@ public class ProjectDailyReport {
     private String address = "";
 
     /**
+     * 上报的兴趣点位置
+     */
+    private String poi = "";
+
+    /**
      * 创建时间
      */
     private String createTime = "";
@@ -177,6 +182,14 @@ public class ProjectDailyReport {
         this.mediaList = mediaList;
     }
 
+    public String getPoi() {
+        return poi;
+    }
+
+    public void setPoi(String poi) {
+        this.poi = poi;
+    }
+
     @Override
     public String toString() {
         return "ProjectDailyReport{" +
@@ -190,8 +203,10 @@ public class ProjectDailyReport {
                 ", district='" + district + '\'' +
                 ", lnglat='" + lnglat + '\'' +
                 ", address='" + address + '\'' +
+                ", poi='" + poi + '\'' +
                 ", createTime='" + createTime + '\'' +
                 ", updateTime='" + updateTime + '\'' +
+                ", mediaList=" + mediaList +
                 '}';
     }
 }

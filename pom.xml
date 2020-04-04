@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.wj</groupId>
     <artifactId>nongtian</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <name>Nongtian</name>
     <description>高标农田项目服务端</description>
     <!-- war包部署-->

@@ -66,6 +66,7 @@ public class UserController {
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
     public String changePassword(String username, String oldPwd, String newPwd) {
+        logger.info("修改密码请求:" + username + "  " + oldPwd + " " + newPwd);
         if (StringUtils.isEmpty(username)) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_USERNAME_EMPTY);
         }
@@ -95,8 +96,40 @@ public class UserController {
         } else {
             result = JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED, "旧密码错误");
         }
+
+        logger.info("修改密码结果:" + result);
         return result;
     }
+
+
+    @RequestMapping(value = "/updateInfo", method = RequestMethod.GET)
+    public String updateInfo(Integer uid, String nickname, String phone, Integer age, Integer gender) {
+        logger.info("更新用户信息请求:" + uid + "  " + nickname + " " + phone + " " + age + " " + gender);
+        if (uid == null) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_USERNAME_EMPTY);
+        }
+
+        if (StringUtils.isEmpty(nickname) && StringUtils.isEmpty(phone) && age == null && gender == null) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED);
+        }
+
+        // 首先判断用户是不是存在
+        boolean isExist = userService.isUserExist(uid);
+
+        if (!isExist) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_USERNAME_NOT_FOUND);
+        }
+
+        String result = "";
+        boolean isSuccess = userService.updateUserInfo(uid, nickname, phone, age, gender);
+        if (isSuccess) {
+            result = JsonUtils.getJsonResult(ResultCode.RESULT_OK, "修改成功");
+        } else {
+            result = JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED, "修改失败");
+        }
+        return result;
+    }
+
 
     @RequestMapping(value = "/getSubAreaUser", method = RequestMethod.GET)
     public String getSubAreaUser(Integer uid) {

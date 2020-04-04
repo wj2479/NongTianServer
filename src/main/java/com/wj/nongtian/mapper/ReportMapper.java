@@ -1,9 +1,6 @@
 package com.wj.nongtian.mapper;
 
-import com.wj.nongtian.entity.DaySchedule;
-import com.wj.nongtian.entity.ProjectDailyReport;
-import com.wj.nongtian.entity.ReportComment;
-import com.wj.nongtian.entity.ReportMedia;
+import com.wj.nongtian.entity.*;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -24,7 +21,7 @@ public interface ReportMapper {
      * @param dailyReport
      * @return
      */
-    @Insert("insert into project_day_report(pid,uid,title,content,`check`,`schedule`,lnglat,address,createtime) values(#{pid},#{uid},#{title},#{content},#{check},#{schedule},#{lnglat},#{address},now())")
+    @Insert("insert into project_day_report(pid,uid,title,content,`check`,`schedule`,lnglat,address,poi,createtime) values(#{pid},#{uid},#{title},#{content},#{check},#{schedule},#{lnglat},#{address},#{poi},now())")
     //加入该注解可以保持对象后，查看对象插入id
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int addDailyReport(ProjectDailyReport dailyReport);
@@ -49,13 +46,20 @@ public interface ReportMapper {
     @Select("select * from report_picture_video where rid=#{rid}")
     List<ReportMedia> getReportMedias(@Param("rid") int rid);
 
-    @Select("select max(schedule) schedule, date ,max(createtime) updateTime\n" +
-            "from (select project_day_report.*,date_format(IFNULL(updatetime,createtime),'%Y-%m-%d') as date \n" +
-            "\tfrom project_day_report\n" +
-            "\twhere pid = #{pid}) p\n" +
-            "\twhere date is not NULL\n" +
-            "GROUP BY date \n" +
-            "order by date desc")
+    @Select("SELECT title, date, schedule, IFNULL(updatetime, createtime) AS updateTime\n" +
+            "FROM project_day_report a\n" +
+            "\tJOIN (\n" +
+            "\t\tSELECT MAX(id) AS id, date\n" +
+            "\t\tFROM (\n" +
+            "\t\t\tSELECT project_day_report.*, date_format(IFNULL(updatetime, createtime), '%Y-%m-%d') AS date\n" +
+            "\t\t\tFROM project_day_report\n" +
+            "\t\t\tWHERE pid = #{pid}\n" +
+            "\t\t) p\n" +
+            "\t\tWHERE date IS NOT NULL\n" +
+            "\t\tGROUP BY date\n" +
+            "\t\torder by date desc\n" +
+            "\t) b\n" +
+            "\tON a.id = b.id")
     List<DaySchedule> getDailySchedule(@Param("pid") int pid);
 
     @Select("select * \n" +
@@ -146,4 +150,8 @@ public interface ReportMapper {
 
     @Select("select * from report_comment_pics where cid=#{cid}")
     List<ReportMedia> getCommentMedias(@Param("cid") int id);
+
+    List<UserReportCount> getReportDayCount(@Param("ids") List<Integer> ids, @Param("date") String date, @Param("dateFormat") String dateFormat);
+
+    List<UserReportCount> getReportCountBetween(@Param("ids") List<Integer> childUserIdsList, @Param("startDate") String startDate, @Param("endDate") String endDate);
 }

@@ -1,9 +1,6 @@
 package com.wj.nongtian.service.impl;
 
-import com.wj.nongtian.entity.DaySchedule;
-import com.wj.nongtian.entity.ProjectDailyReport;
-import com.wj.nongtian.entity.ReportComment;
-import com.wj.nongtian.entity.ReportMedia;
+import com.wj.nongtian.entity.*;
 import com.wj.nongtian.mapper.ReportMapper;
 import com.wj.nongtian.service.ReportService;
 import org.springframework.stereotype.Service;
@@ -117,6 +114,16 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<ReportMedia> getCommentMedias(int id) {
         return reportMapper.getCommentMedias(id);
+    }
+
+    @Override
+    public List<UserReportCount> getReportDayOrMonthCount(List<Integer> ids, String date, String dateFormat) {
+        return reportMapper.getReportDayCount(ids, date, dateFormat);
+    }
+
+    @Override
+    public List<UserReportCount> getReportCountBetween(List<Integer> childUserIdsList, String startDate, String endDate) {
+        return reportMapper.getReportCountBetween(childUserIdsList, startDate, endDate);
     }
 
 }

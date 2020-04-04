@@ -145,8 +145,9 @@ public class ProjectController {
         if (pid == null || pid < 0) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
-
         int plan = projectService.getProjectPlanMonth(pid);
+
+        logger.info("获取项目月度目标:" + pid + "  " + plan);
         return JsonUtils.getJsonResult(ResultCode.RESULT_OK, plan);
     }
 
@@ -160,6 +161,8 @@ public class ProjectController {
         if (plan > 0) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "本月已设置");
         }
+
+        logger.info("设置项目月度目标:" + pid + "  " + uid + "  " + target);
 
         boolean success = projectService.setProjectPlanThisMonth(pid, uid, target);
         if (success) {

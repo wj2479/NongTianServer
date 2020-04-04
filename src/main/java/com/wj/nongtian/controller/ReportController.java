@@ -31,6 +31,9 @@ public class ReportController {
 
     private Logger logger = Logger.getLogger(getClass());
 
+    private static final String DATE_FORMAT_Y_M_D = "%Y-%m-%d";
+    private static final String DATE_FORMAT_Y_M = "%Y-%m";
+
     Calendar calendar = Calendar.getInstance();
 
     private final ReportService reportService;
@@ -89,7 +92,6 @@ public class ReportController {
      */
     private void fillReportMedia(ProjectDailyReport dailyReport, HttpServletRequest request) {
         List<ReportMedia> reportMedia = reportService.getReportMedias(dailyReport.getId());
-        System.out.println("项目日报记录" + dailyReport.getId() + " -->" + reportMedia.size());
         if (reportMedia != null && reportMedia.size() > 0) {
             List<ResponseMedia> list = new ArrayList<>();
             for (ReportMedia media : reportMedia) {
@@ -143,6 +145,7 @@ public class ReportController {
         if (files != null && files.length > 0) {
             // 配置文件配置的上传文件根目录
             String configPath = mConfig.getFileUploadFolder();
+            calendar.setTime(new Date());
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH) + 1;
 
@@ -254,7 +257,7 @@ public class ReportController {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
 
-        System.out.println("当前上传的对象：" + dailyReport.toString());
+        logger.info("日报上传请求：" + dailyReport.toString());
 
         try {
             int id = reportService.addDailyReport(dailyReport);
@@ -265,6 +268,7 @@ public class ReportController {
             if (files != null && files.length > 0) {
                 // 配置文件配置的上传文件根目录
                 String configPath = mConfig.getFileUploadFolder() + mConfig.getImageFolder();
+                calendar.setTime(new Date());
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH) + 1;
 
@@ -304,16 +308,19 @@ public class ReportController {
                     reportService.addReportMedias(media);
                 }
             }
-
+            logger.info("日报上传成功：" + dailyReport.getId());
             return JsonUtils.getJsonResult(ResultCode.RESULT_OK, "上传成功");
         } catch (Exception e) {
             e.printStackTrace();
+            logger.info("日报上传失败：" + e.toString());
         }
+
         return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "上传失败");
     }
 
     @RequestMapping(value = "/getUnqualifiedReportList", method = RequestMethod.GET)
     public String getUnqualifiedReportList(Integer pid, HttpServletRequest request) {
+        logger.info("查询不合格项目请求：" + pid);
         if (pid == null || pid < 0) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
@@ -341,7 +348,6 @@ public class ReportController {
      * @param pid
      */
     private void fillEndProjectId(List<Integer> ids, int pid) {
-
         if (ids == null)
             return;
 
@@ -356,11 +362,14 @@ public class ReportController {
         }
     }
 
+    /************************************日报关注相关操作***********************************************/
+
     @RequestMapping(value = "/focusReport", method = RequestMethod.GET)
     public String focusReport(Integer uid, Integer rid, Boolean isFocus) {
         if (uid == null || rid == null || isFocus == null) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
+        logger.info("日报关注/取消:" + uid + " " + rid + " " + isFocus);
 
         boolean isFocused = reportService.isReportFocused(uid, rid);
         try {
@@ -391,6 +400,8 @@ public class ReportController {
         if (uid == null) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
+
+        logger.info("获取关注日报请求:" + uid);
 
         List<Project> reportList = new ArrayList<>();
         //获取用户关注的日报ID列表
@@ -439,6 +450,7 @@ public class ReportController {
         return reportList;
     }
 
+    /************************************日报评论相关操作***********************************************/
 
     @RequestMapping(value = "/addReportComment", method = RequestMethod.POST)
     public String addReportComment(ReportComment reportComment, MultipartFile[] files) {
@@ -452,13 +464,15 @@ public class ReportController {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
 
+        logger.info("添加日报评论请求:" + reportComment);
+
         try {
             int id = reportService.addReportComment(reportComment);
-            System.out.println("当前上传的对象ID：" + reportComment.getId());
 
             if (files != null && files.length > 0) {
                 // 配置文件配置的上传文件根目录
                 String configPath = mConfig.getFileUploadFolder() + mConfig.getImageFolder();
+                calendar.setTime(new Date());
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH) + 1;
 
@@ -498,10 +512,11 @@ public class ReportController {
                     reportService.addCommentMedias(media);
                 }
             }
-
+            logger.info("评论添加成功:" + reportComment.getId());
             return JsonUtils.getJsonResult(ResultCode.RESULT_OK, "评论成功");
         } catch (Exception e) {
             e.printStackTrace();
+            logger.info("评论添加失败:" + e.toString());
         }
         return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "评论失败");
     }
@@ -511,6 +526,8 @@ public class ReportController {
         if (rid == null || rid < 0) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
         }
+
+        logger.info("获取日报评论请求:" + rid);
 
         String result = "";
         List<ReportComment> reportComments = reportService.getReportComments(rid);
@@ -560,6 +577,63 @@ public class ReportController {
             }
             reportComment.setMediaList(list);
         }
+    }
+
+
+    /************************************日报统计相关操作***********************************************/
+
+    @RequestMapping(value = "/getReportCount", method = RequestMethod.GET)
+    public String getReportCount(Integer uid, String date) {
+        if (uid == null || !userService.isUserExist(uid)) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
+        }
+
+        logger.info("日报统计查询日期:" + date);
+        String dFormat = "";
+
+        if (date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            dFormat = DATE_FORMAT_Y_M_D;
+        } else if (date.matches("\\d{4}-\\d{2}")) {
+            dFormat = DATE_FORMAT_Y_M;
+        } else {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
+        }
+
+        User user = userService.getUser(uid);
+        List<Integer> childUserIdsList = userService.getAllSupervisorIdsByAreaId(user.getArea());
+
+        List<UserReportCount> reportCountList = reportService.getReportDayOrMonthCount(childUserIdsList, date, dFormat);
+
+        return JsonUtils.getJsonResult(ResultCode.RESULT_OK, reportCountList);
+    }
+
+    @RequestMapping(value = "/getReportCountBetween", method = RequestMethod.GET)
+    public String getReportCountBetween(Integer uid, String startDate, String endDate) {
+        if (uid == null || !userService.isUserExist(uid)) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
+        }
+
+        logger.info("日报统计查询日期:" + startDate + " - " + endDate);
+
+        // 判断传入日期是否正确
+        if (startDate.matches("\\d{4}-\\d{2}-\\d{2}") && endDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            if (startDate.compareTo(endDate) > 0) {
+                return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR, "起止时间设置错误");
+            }
+        } else {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_PARAMS_ERROR);
+        }
+
+        try {
+            User user = userService.getUser(uid);
+            List<Integer> childUserIdsList = userService.getAllSupervisorIdsByAreaId(user.getArea());
+
+            List<UserReportCount> reportCountList = reportService.getReportCountBetween(childUserIdsList, startDate, endDate);
+            return JsonUtils.getJsonResult(ResultCode.RESULT_OK, reportCountList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "获取统计信息失败");
     }
 
 }

@@ -67,4 +67,16 @@ public interface UserMapper {
      */
     @Update("update user_info set salt = #{salt} , password = #{password} where username = #{username}")
     int updateUserPassword(@Param("username") String username, @Param("salt") String salt, @Param("password") String password);
+
+    /**
+     * 修改用户信息
+     *
+     * @param uid
+     * @param nickname
+     * @param phone
+     * @param age
+     * @param gender
+     * @return
+     */
+    int updateUserInfo(@Param("uid") Integer uid, @Param("nickname") String nickname, @Param("phone") String phone, @Param("age") Integer age, @Param("gender") Integer gender);
 }

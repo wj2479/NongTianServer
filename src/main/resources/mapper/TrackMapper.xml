@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wj.nongtian.mapper.TrackMapper">
+
+    <select id="getLastLocations" resultType="com.wj.nongtian.entity.UserLastLocation">
+        SELECT r.*, nickname
+        FROM (
+        SELECT a.uid, lng, lat, createtime, date
+        FROM (
+        SELECT uid, MAX(id) AS aid, MAX(createtime) AS atime
+        , DATE_FORMAT(MAX(createtime), '%Y-%m-%d') AS date
+        FROM tracks
+        WHERE uid IN
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        GROUP BY uid
+        ) a
+        LEFT JOIN tracks
+        ON a.aid = tracks.id
+        AND date = #{date}
+        ) r, user_info
+        WHERE r.uid = user_info.id
+        order by createtime desc
+    </select>
+
+</mapper>

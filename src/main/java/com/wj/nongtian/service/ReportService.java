@@ -1,10 +1,7 @@
 package com.wj.nongtian.service;
 
 
-import com.wj.nongtian.entity.DaySchedule;
-import com.wj.nongtian.entity.ProjectDailyReport;
-import com.wj.nongtian.entity.ReportComment;
-import com.wj.nongtian.entity.ReportMedia;
+import com.wj.nongtian.entity.*;
 
 import java.util.List;
 
@@ -115,4 +112,24 @@ public interface ReportService {
      * @return
      */
     List<ReportMedia> getCommentMedias(int id);
+
+    /**
+     * 获取日报统计信息
+     *
+     * @param ids
+     * @param date       日期或者月份
+     * @param dateFormat Sql查询的数据格式
+     * @return
+     */
+    List<UserReportCount> getReportDayOrMonthCount(List<Integer> ids, String date, String dateFormat);
+
+    /**
+     * 获取两个日期之间的日报统计信息
+     *
+     * @param childUserIdsList
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    List<UserReportCount> getReportCountBetween(List<Integer> childUserIdsList, String startDate, String endDate);
 }
