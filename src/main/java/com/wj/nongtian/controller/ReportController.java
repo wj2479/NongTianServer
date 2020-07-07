@@ -259,61 +259,61 @@ public class ReportController {
 
         logger.info("日报上传请求：" + dailyReport.toString());
 
-        try {
-            int id = reportService.addDailyReport(dailyReport);
-//            System.out.println("当前上传的对象ID：" + dailyReport.getId());
-
-            projectService.updateProjectSchedule(dailyReport.getPid(), dailyReport.getSchedule());
-
-            if (files != null && files.length > 0) {
-                // 配置文件配置的上传文件根目录
-                String configPath = mConfig.getFileUploadFolder() + mConfig.getImageFolder();
-                calendar.setTime(new Date());
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH) + 1;
-
-                String monthStr = month > 9 ? month + "" : "0" + month;
-
-                // 根据年月生成目录
-                String path = year + "/" + monthStr;
-                String uploadPath = configPath + "/" + path;
-                File uploadDir = new File(uploadPath);
-                System.out.println("生成路径：" + uploadDir.getAbsolutePath());
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdirs();
-                }
-
-                for (MultipartFile multipartFile : files) {
-                    if (multipartFile.isEmpty()) {
-                        continue;
-                    }
-                    //取得当前上传文件的文件名称
-                    String filename = multipartFile.getOriginalFilename();
-                    System.out.println("当前上传的文件名：" + filename);
-
-                    filename = FileUtils.getFilePath(uploadPath, filename);
-
-                    // 保存文件
-                    File savedFile = new File(uploadPath + "/" + filename);
-                    multipartFile.transferTo(savedFile);
-
-                    ReportMedia media = new ReportMedia();
-                    media.setMd5(FileUtils.getMd5FromFile(savedFile));
-                    media.setRootpath(configPath);
-                    media.setName(multipartFile.getOriginalFilename());
-                    media.setType(multipartFile.getContentType());
-                    media.setPath(path + "/" + filename);
-                    media.setRid(dailyReport.getId());
-
-                    reportService.addReportMedias(media);
-                }
-            }
-            logger.info("日报上传成功：" + dailyReport.getId());
-            return JsonUtils.getJsonResult(ResultCode.RESULT_OK, "上传成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.info("日报上传失败：" + e.toString());
-        }
+//        try {
+//            int id = reportService.addDailyReport(dailyReport);
+////            System.out.println("当前上传的对象ID：" + dailyReport.getId());
+//
+//            projectService.updateProjectSchedule(dailyReport.getPid(), dailyReport.getSchedule());
+//
+//            if (files != null && files.length > 0) {
+//                // 配置文件配置的上传文件根目录
+//                String configPath = mConfig.getFileUploadFolder() + mConfig.getImageFolder();
+//                calendar.setTime(new Date());
+//                int year = calendar.get(Calendar.YEAR);
+//                int month = calendar.get(Calendar.MONTH) + 1;
+//
+//                String monthStr = month > 9 ? month + "" : "0" + month;
+//
+//                // 根据年月生成目录
+//                String path = year + "/" + monthStr;
+//                String uploadPath = configPath + "/" + path;
+//                File uploadDir = new File(uploadPath);
+//                System.out.println("生成路径：" + uploadDir.getAbsolutePath());
+//                if (!uploadDir.exists()) {
+//                    uploadDir.mkdirs();
+//                }
+//
+//                for (MultipartFile multipartFile : files) {
+//                    if (multipartFile.isEmpty()) {
+//                        continue;
+//                    }
+//                    //取得当前上传文件的文件名称
+//                    String filename = multipartFile.getOriginalFilename();
+//                    System.out.println("当前上传的文件名：" + filename);
+//
+//                    filename = FileUtils.getFilePath(uploadPath, filename);
+//
+//                    // 保存文件
+//                    File savedFile = new File(uploadPath + "/" + filename);
+//                    multipartFile.transferTo(savedFile);
+//
+//                    ReportMedia media = new ReportMedia();
+//                    media.setMd5(FileUtils.getMd5FromFile(savedFile));
+//                    media.setRootpath(configPath);
+//                    media.setName(multipartFile.getOriginalFilename());
+//                    media.setType(multipartFile.getContentType());
+//                    media.setPath(path + "/" + filename);
+//                    media.setRid(dailyReport.getId());
+//
+//                    reportService.addReportMedias(media);
+//                }
+//            }
+//            logger.info("日报上传成功：" + dailyReport.getId());
+//            return JsonUtils.getJsonResult(ResultCode.RESULT_OK, "上传成功");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            logger.info("日报上传失败：" + e.toString());
+//        }
 
         return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "上传失败");
     }
@@ -602,6 +602,8 @@ public class ReportController {
         User user = userService.getUser(uid);
         List<Integer> childUserIdsList = userService.getAllSupervisorIdsByAreaId(user.getArea());
 
+        logger.info("日报Count统计Ids:" + childUserIdsList);
+
         List<UserReportCount> reportCountList = reportService.getReportDayOrMonthCount(childUserIdsList, date, dFormat);
 
         return JsonUtils.getJsonResult(ResultCode.RESULT_OK, reportCountList);
@@ -627,6 +629,8 @@ public class ReportController {
         try {
             User user = userService.getUser(uid);
             List<Integer> childUserIdsList = userService.getAllSupervisorIdsByAreaId(user.getArea());
+
+            logger.info("日报Between统计Ids:" + childUserIdsList);
 
             List<UserReportCount> reportCountList = reportService.getReportCountBetween(childUserIdsList, startDate, endDate);
             return JsonUtils.getJsonResult(ResultCode.RESULT_OK, reportCountList);

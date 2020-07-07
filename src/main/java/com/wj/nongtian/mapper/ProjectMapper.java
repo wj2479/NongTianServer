@@ -91,7 +91,7 @@ public interface ProjectMapper {
     int saveProjectPlanMonth(@Param("pid") int pid, @Param("uid") int uid, @Param("year") int year, @Param("month") int month, @Param("target") int target);
 
     @Update("update project_info set process = #{schedule} , updatetime = now()  where id= #{pid}")
-    int updateProjectSchedule(@Param("pid") int pid, @Param("schedule") int schedule);
+    int updateProjectSchedule(@Param("pid") int pid, @Param("schedule") float schedule);
 
     /**
      * 根据地区ID 获取本地区的项目列表

@@ -24,7 +24,7 @@ public class Project {
     /**
      * 项目进度
      */
-    private int process;
+    private float process;
 
     /**
      * 项目创建者Id
@@ -95,11 +95,11 @@ public class Project {
         this.info = info;
     }
 
-    public int getProcess() {
+    public float getProcess() {
         return process;
     }
 
-    public void setProcess(int process) {
+    public void setProcess(float process) {
         this.process = process;
     }
 

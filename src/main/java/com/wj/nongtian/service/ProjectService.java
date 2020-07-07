@@ -26,5 +26,5 @@ public interface ProjectService {
 
     boolean setProjectPlanThisMonth(int pid, int uid, int target);
 
-    int updateProjectSchedule(int pid, int schedule);
+    int updateProjectSchedule(int pid, float schedule);
 }

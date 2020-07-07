@@ -106,24 +106,25 @@ public class UserServiceImpl implements UserService {
             return;
         }
 
+        // 首先获取当前区域下的监理
+        List<User> userList = getUsersByAreaId(area.getId());
+        for (User user : userList) {
+            if (user.getRole().getCode() == Role.CODE.SUPERVISOR.getValue()) {
+                if (childUserList != null) {
+                    childUserList.add(user);
+                }
+                if (childUserIdsList != null) {
+                    childUserIdsList.add(user.getId());
+                }
+            }
+        }
+
         // 如果这个区域还有下级区域
         if (area.getRegionLevel() < 4) {
             // 获取下级区域列表
             List<Area> areaList = areaMapper.getSubAreaById(area.getId());
             for (Area a : areaList) {
                 fillAreaUser(a, childUserList, childUserIdsList);
-            }
-        } else {
-            List<User> userList = getUsersByAreaId(area.getId());
-            for (User user : userList) {
-                if (user.getRole().getCode() == Role.CODE.SUPERVISOR.getValue()) {
-                    if (childUserList != null) {
-                        childUserList.add(user);
-                    }
-                    if (childUserIdsList != null) {
-                        childUserIdsList.add(user.getId());
-                    }
-                }
             }
         }
     }

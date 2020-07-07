@@ -15,6 +15,8 @@ import java.util.List;
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
+    java.text.DecimalFormat df = new java.text.DecimalFormat("#.00");
+
     private Logger logger = Logger.getLogger(getClass());
 
     @Resource
@@ -118,7 +120,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public int updateProjectSchedule(int pid, int schedule) {
+    public int updateProjectSchedule(int pid, float schedule) {
         Project project = projectMapper.getProjectById(pid);
         if (project != null) {
             int num = projectMapper.updateProjectSchedule(pid, schedule);
@@ -126,14 +128,14 @@ public class ProjectServiceImpl implements ProjectService {
 
             if (project.getParentId() > 0) {
                 List<Project> projects = projectMapper.getSubProjectsByParentId(project.getParentId());
-                int avgSchedule = 0;
+                float avgSchedule = 0;
 
                 if (projects != null && projects.size() > 0) {
                     int sum = 0;
                     for (Project proj : projects) {
                         sum += proj.getProcess();
                     }
-                    avgSchedule = sum / projects.size();
+                    avgSchedule = sum * 1.00f / projects.size();
                     return updateProjectSchedule(project.getParentId(), avgSchedule);
                 }
             }
