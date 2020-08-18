@@ -9,6 +9,7 @@ import com.wj.nongtian.service.AreaService;
 import com.wj.nongtian.service.UserService;
 import com.wj.nongtian.utils.JsonUtils;
 import org.apache.log4j.Logger;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,14 +50,12 @@ public class UserController {
         }
 
         logger.info("接收到登录参数:" + username + "  " + password);
-
         User user = userService.login(username, password);
 
         String result = "";
         if (user != null) {
             logger.info("查询到登录结果:" + user.toString());
-            areaService.initParentAreas(user.getArea());
-
+            initArea(user);
             result = JsonUtils.getJsonResult(ResultCode.RESULT_OK, "登录成功", user);
         } else {
             result = JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED);
@@ -92,7 +91,6 @@ public class UserController {
             } else {
                 result = JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED, "密码修改失败");
             }
-
         } else {
             result = JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED, "旧密码错误");
         }
@@ -101,27 +99,45 @@ public class UserController {
         return result;
     }
 
-
-    @RequestMapping(value = "/updateInfo", method = RequestMethod.GET)
-    public String updateInfo(Integer uid, String nickname, String phone, Integer age, Integer gender) {
-        logger.info("更新用户信息请求:" + uid + "  " + nickname + " " + phone + " " + age + " " + gender);
-        if (uid == null) {
+    @RequestMapping(value = "/resetPassword", method = RequestMethod.GET)
+    public String resetPassword(String username, String newPwd) {
+        logger.info("重置密码请求:" + username + "  " + newPwd);
+        if (StringUtils.isEmpty(username)) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_USERNAME_EMPTY);
         }
 
-        if (StringUtils.isEmpty(nickname) && StringUtils.isEmpty(phone) && age == null && gender == null) {
-            return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED);
+        // 首先判断用户是不是存在
+        boolean isExist = userService.isUserExist(username);
+        if (!isExist) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_USERNAME_NOT_FOUND);
+        }
+
+        String result = "";
+        boolean isSuccess = userService.setPassword(username, newPwd);
+        if (isSuccess) {
+            result = JsonUtils.getJsonResult(ResultCode.RESULT_OK, "密码重置成功");
+        } else {
+            result = JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED, "密码重置失败");
+        }
+        logger.info("重置密码结果:" + result);
+        return result;
+    }
+
+    @RequestMapping(value = "/updateInfo", method = RequestMethod.GET)
+    public String updateInfo(@RequestBody User user) {
+        if (user == null && user.getId() == 0) {
+            return JsonUtils.getJsonResult(ResultCode.RESULT_USERNAME_EMPTY);
         }
 
         // 首先判断用户是不是存在
-        boolean isExist = userService.isUserExist(uid);
+        boolean isExist = userService.isUserExist(user.getId());
 
         if (!isExist) {
             return JsonUtils.getJsonResult(ResultCode.RESULT_USERNAME_NOT_FOUND);
         }
 
         String result = "";
-        boolean isSuccess = userService.updateUserInfo(uid, nickname, phone, age, gender);
+        boolean isSuccess = userService.updateUserInfo(user);
         if (isSuccess) {
             result = JsonUtils.getJsonResult(ResultCode.RESULT_OK, "修改成功");
         } else {
@@ -129,7 +145,6 @@ public class UserController {
         }
         return result;
     }
-
 
     @RequestMapping(value = "/getSubAreaUser", method = RequestMethod.GET)
     public String getSubAreaUser(Integer uid) {
@@ -139,7 +154,19 @@ public class UserController {
 
         try {
             User user = userService.getUser(uid);
-            List<Area> areaList = areaService.getSubAreaById(user.getArea().getId());
+            // 获取最后一级地区的列表
+            int areaId = -1;
+            if (user.getAreaId() != 0) {
+                areaId = user.getAreaId();
+            } else if (user.getDistrictId() != 0) {
+                areaId = user.getDistrictId();
+            } else if (user.getCityId() != 0) {
+                areaId = user.getCityId();
+            } else if (user.getProvinceId() != 0) {
+                areaId = user.getProvinceId();
+            }
+
+            List<Area> areaList = areaService.getSubAreaById(areaId);
 
             List<UserAreaTreeNode> treeNodes = new ArrayList<>();
             for (Area area : areaList) {
@@ -150,7 +177,7 @@ public class UserController {
             }
             return JsonUtils.getJsonResult(ResultCode.RESULT_OK, treeNodes);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "获取失败");
     }
@@ -163,11 +190,9 @@ public class UserController {
 
         try {
             User user = userService.getUser(uid);
-
             if (user != null) {
                 logger.info("查询到用户:" + user.toString());
-                areaService.initParentAreas(user.getArea());
-
+                initArea(user);
                 return JsonUtils.getJsonResult(ResultCode.RESULT_OK, user);
             } else {
                 return JsonUtils.getJsonResult(ResultCode.RESULT_LOGIN_FAILED);
@@ -178,14 +203,14 @@ public class UserController {
         return JsonUtils.getJsonResult(ResultCode.RESULT_FAILED, "获取失败");
     }
 
-
     /**
      * 递归的填充下级用户
      *
      * @param treeNode
      */
     private void fillAreaUser(UserAreaTreeNode treeNode) {
-        List<User> userList = userService.getUsersByAreaId(treeNode.getArea().getId());
+        List<User> userList = userService.getUsersByArea(treeNode.getArea());
+
         // 如果这个区域还有下级区域
         if (treeNode.getArea().hasChild()) {
             treeNode.setUserInfos(userList);
@@ -208,7 +233,31 @@ public class UserController {
             treeNodes.add(node);
             treeNode.setChilds(treeNodes);
         }
-
     }
 
+    /**
+     * 初始化省市区乡镇地区信息
+     *
+     * @param user
+     */
+    private void initArea(User user) {
+        if (user == null)
+            return;
+        if (user.getProvinceId() != 0) {
+            Area area = areaService.getAreaById(user.getProvinceId());
+            user.setProvince(area);
+        }
+        if (user.getCityId() != 0) {
+            Area area = areaService.getAreaById(user.getCityId());
+            user.setCity(area);
+        }
+        if (user.getDistrictId() != 0) {
+            Area area = areaService.getAreaById(user.getDistrictId());
+            user.setDistrict(area);
+        }
+        if (user.getAreaId() != 0) {
+            Area area = areaService.getAreaById(user.getAreaId());
+            user.setArea(area);
+        }
+    }
 }

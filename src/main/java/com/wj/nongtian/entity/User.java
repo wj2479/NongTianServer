@@ -39,11 +39,38 @@ public class User {
      * 手机号是否验证
      */
     private boolean phoneVerified;
-
     /**
-     * 所属区域
+     * 所属省份区域
+     */
+    private Area province;
+    /**
+     * 所属城市区域
+     */
+    private Area city;
+    /**
+     * 所属区县区域
+     */
+    private Area district;
+    /**
+     * 所属乡镇区域
      */
     private Area area;
+    /**
+     * 所属省份区域Id
+     */
+    private int provinceId;
+    /**
+     * 所属城市区域Id
+     */
+    private int cityId;
+    /**
+     * 所属区县区域Id
+     */
+    private int districtId;
+    /**
+     * 所属乡镇区域Id
+     */
+    private int areaId;
 
     /**
      * 角色类型
@@ -140,6 +167,30 @@ public class User {
         return role;
     }
 
+    public Area getProvince() {
+        return province;
+    }
+
+    public void setProvince(Area province) {
+        this.province = province;
+    }
+
+    public Area getCity() {
+        return city;
+    }
+
+    public void setCity(Area city) {
+        this.city = city;
+    }
+
+    public Area getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(Area district) {
+        this.district = district;
+    }
+
     public void setRole(Role role) {
         this.role = role;
     }
@@ -184,6 +235,38 @@ public class User {
         this.updateTime = updateTime;
     }
 
+    public int getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(int provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public int getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(int cityId) {
+        this.cityId = cityId;
+    }
+
+    public int getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(int districtId) {
+        this.districtId = districtId;
+    }
+
+    public int getAreaId() {
+        return areaId;
+    }
+
+    public void setAreaId(int areaId) {
+        this.areaId = areaId;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -194,11 +277,19 @@ public class User {
                 ", nickName='" + nickName + '\'' +
                 ", phone='" + phone + '\'' +
                 ", phoneVerified=" + phoneVerified +
+                ", province=" + province +
+                ", city=" + city +
+                ", district=" + district +
                 ", area=" + area +
+                ", provinceId=" + provinceId +
+                ", cityId=" + cityId +
+                ", districtId=" + districtId +
+                ", areaId=" + areaId +
                 ", role=" + role +
                 ", age=" + age +
                 ", gender=" + gender +
                 ", avater='" + avater + '\'' +
+                ", company=" + company +
                 ", createTime='" + createTime + '\'' +
                 ", updateTime='" + updateTime + '\'' +
                 '}';

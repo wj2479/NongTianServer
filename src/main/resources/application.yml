@@ -50,6 +50,6 @@ myconfig:
   #图片上传的路径
   imageFolder: images/
   #服务器地址，返回资源下载地址的时候使用, 如果为空 就使用本机的Ip
-  #  baseUrl: http://39.99.168.20:8088/
-  baseUrl:
+  baseUrl: http://39.99.168.20:8088/
+#  baseUrl:
 

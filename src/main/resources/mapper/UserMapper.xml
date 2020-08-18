@@ -17,19 +17,13 @@
         <result property="phoneVerified" column="phoneverified"></result>
         <result property="age" column="age"></result>
         <result property="gender" column="gender"></result>
+        <result property="provinceId" column="province_id"></result>
+        <result property="cityId" column="city_id"></result>
+        <result property="districtId" column="district_id"></result>
+        <result property="areaId" column="area_id"></result>
         <result property="avater" column="avater"></result>
         <result property="createTime" column="createtime"></result>
         <result property="updateTime" column="updatetime"></result>
-
-        <association property="area" javaType="com.wj.nongtian.entity.Area">
-            <id property="id" column="areaid"></id>
-
-            <result property="regionLevel" column="region_level"></result>
-            <result property="parentId" column="parent_id"></result>
-            <result property="name" column="aname"></result>
-            <result property="regionCode" column="region_code"></result>
-            <result property="shortName" column="short_name"></result>
-        </association>
 
         <association property="role" javaType="com.wj.nongtian.entity.Role">
             <result property="code" column="role"></result>
@@ -38,55 +32,75 @@
         </association>
     </resultMap>
 
-    <select id="isUserNameExists"  resultType="java.lang.Boolean">
-    <![CDATA[ select count(id)
-                from user_info where username = #{username} ]]>
+    <select id="isUserNameExists" resultType="java.lang.Boolean">
+    <![CDATA[
+                              select count(id)
+                                                from user_info where username = #{username}
+
+        ]]>
     </select>
 
-    <select id="isUserIdExists"  resultType="java.lang.Boolean">
-    <![CDATA[ select count(id)
-                from user_info where id = #{uid} ]]>
+    <select id="isUserIdExists" resultType="java.lang.Boolean">
+    <![CDATA[
+                                 select count(id)
+                                          from user_info where id = #{uid}
+
+        ]]>
     </select>
 
-    <select id="getSalt"  resultType="java.lang.String">
+    <select id="getSalt" resultType="java.lang.String">
         select salt from user_info where username = #{username}
     </select>
 
-    <select id="getLoginInfo"  resultMap="user_result_map">
-        select user_info.*,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name,role.code,role.level,role.desc
+    <select id="getLoginInfo" resultMap="user_result_map">
+        select user_info.*,role.code,role.level,role.desc
         from user_info
-        left join area
-        on user_info.areaid = area.id
         left join role
         on user_info.role = role.code
         where user_info.username = #{username}
         and user_info.password = #{password}
     </select>
 
-    <select id="getUserById"  resultMap="user_result_map">
-        select user_info.*,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name,role.code,role.level,role.desc
+    <select id="getUserById" resultMap="user_result_map">
+        select user_info.*,role.code,role.level,role.desc
         from user_info
-        left join area
-        on user_info.areaid = area.id
         left join role
         on user_info.role = role.code
         where user_info.id = #{uid}
     </select>
 
-    <select id="getUsersByAreaId" resultMap="user_result_map">
-        select user_info.*,area.region_level,area.parent_id,area.name aname,area.region_code,area.short_name,role.code,role.level,role.desc
-        from user_info,area,role
-        where user_info.areaid = #{areaId}
-        and user_info.role = role.code
-        and user_info.areaid = area.id
---         and (role.`code` = 2  or role.`code` = 1)
+    <select id="getUsersByArea" resultMap="user_result_map">
+        select user_info.*,role.code,role.level,role.desc
+        from user_info,role
+        where user_info.role = role.code
+        <choose>
+            <when test="level == 1">
+                and user_info.province_id = #{areaId}
+                and (user_info.city_id is null or user_info.city_id = 0)
+                and (user_info.district_id is null or user_info.district_id = 0)
+                and (user_info.area_id is null or user_info.area_id = 0)
+            </when>
+            <when test="level == 2">
+                and user_info.city_id = #{areaId}
+                and (user_info.district_id is null or user_info.district_id = 0)
+                and (user_info.area_id is null or user_info.area_id = 0)
+            </when>
+            <when test="level == 3">
+                and user_info.district_id = #{areaId}
+                and (user_info.area_id is null or user_info.area_id = 0)
+            </when>
+            <when test="level == 4">
+                and user_info.area_id = #{areaId}
+            </when>
+        </choose>
+
     </select>
 
     <update id="updateUserInfo">
         update user_info
         <!-- set 能够智能的去掉最后一个,-->
         <set>
-            <if test="nickname != null">
+            <if test="nickName != null">
                 nickname = #{nickname},
             </if>
             <if test="phone != null">

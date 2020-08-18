@@ -50,14 +50,6 @@ public interface UserMapper {
     User getUserById(@Param("uid") int id);
 
     /**
-     * 获取区域下的所有用户信息
-     *
-     * @param areaId
-     * @return
-     */
-    List<User> getUsersByAreaId(@Param("areaId") int areaId);
-
-    /**
      * 修改用户密码
      *
      * @param username
@@ -71,12 +63,17 @@ public interface UserMapper {
     /**
      * 修改用户信息
      *
-     * @param uid
-     * @param nickname
-     * @param phone
-     * @param age
-     * @param gender
+     * @param user
      * @return
      */
-    int updateUserInfo(@Param("uid") Integer uid, @Param("nickname") String nickname, @Param("phone") String phone, @Param("age") Integer age, @Param("gender") Integer gender);
+    int updateUserInfo(User user);
+
+    /**
+     * 根据区域及行政级别获取用户列表
+     *
+     * @param areaId
+     * @param regionLevel
+     * @return
+     */
+    List<User> getUsersByArea(@Param("areaId") int areaId, @Param("level") int regionLevel);
 }

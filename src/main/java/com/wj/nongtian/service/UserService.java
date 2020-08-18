@@ -19,10 +19,10 @@ public interface UserService {
     /**
      * 仅获取当前区域下的所有用户
      *
-     * @param areaId
+     * @param area
      * @return
      */
-    List<User> getUsersByAreaId(int areaId);
+    List<User> getUsersByArea(Area area);
 
     /**
      * 获取当前区域及子区域下所有的监理
@@ -42,5 +42,5 @@ public interface UserService {
 
     boolean setPassword(String username, String newPwd);
 
-    boolean updateUserInfo(Integer uid, String nickname, String phone, Integer age, Integer gender);
+    boolean updateUserInfo(User user);
 }

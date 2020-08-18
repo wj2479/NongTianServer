@@ -56,8 +56,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsersByAreaId(int areaId) {
-        return userMapper.getUsersByAreaId(areaId);
+    public List<User> getUsersByArea(Area area) {
+        return userMapper.getUsersByArea(area.getId(), area.getRegionLevel());
     }
 
     @Override
@@ -76,7 +76,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean setPassword(String username, String newPwd) {
-
         // 设置密码的时候 重新生成salt值
         int randomLen = new Random().nextInt(3) + 8;
         String salt = RandomUtils.getRandomString(randomLen);
@@ -90,11 +89,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateUserInfo(Integer uid, String nickname, String phone, Integer age, Integer gender) {
-        int count = userMapper.updateUserInfo(uid, nickname, phone, age, gender);
+    public boolean updateUserInfo(User user) {
+        int count = userMapper.updateUserInfo(user);
         return true;
     }
-
 
     /**
      * 递归的填充下级用户
@@ -107,7 +105,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 首先获取当前区域下的监理
-        List<User> userList = getUsersByAreaId(area.getId());
+        List<User> userList = getUsersByArea(area);
         for (User user : userList) {
             if (user.getRole().getCode() == Role.CODE.SUPERVISOR.getValue()) {
                 if (childUserList != null) {
@@ -128,6 +126,5 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
-
 
 }
